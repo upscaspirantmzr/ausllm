@@ -8,12 +8,12 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #e5e7eb;
         }
         /* Style for the editable table cells */
         .editable-cell {
             padding: 8px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid #d1d5db;
             background-color: #f9fafb;
             outline: none;
             transition: all 0.2s;
@@ -28,48 +28,48 @@
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
     <!-- Header and Navigation Bar -->
-    <header class="bg-blue-800 text-white shadow-lg sticky top-0 z-50">
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto flex items-center justify-between p-4">
-            <h1 class="text-2xl font-bold">Admin Panel</h1>
+            <h1 class="text-3xl font-extrabold">Admin Panel</h1>
             <!-- Hamburger Menu Button (for mobile) -->
             <button id="menu-btn" class="md:hidden text-white focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
             <!-- Desktop Navigation -->
-            <nav id="desktop-menu" class="hidden md:flex space-x-6">
-                <a href="#manage-news" class="hover:text-blue-200 transition-colors duration-200">Manage News</a>
-                <a href="#manage-schedules" class="hover:text-blue-200 transition-colors duration-200">Manage Schedules</a>
-                <a href="#manage-papers" class="hover:text-blue-200 transition-colors duration-200">Manage Papers</a>
-                <a href="#manage-users" class="hover:text-blue-200 transition-colors duration-200">Manage Users</a>
+            <nav id="desktop-menu" class="hidden md:flex space-x-8">
+                <a href="#manage-news" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">News</a>
+                <a href="#manage-schedules" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Schedules</a>
+                <a href="#manage-papers" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Papers</a>
+                <a href="#manage-users" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Users</a>
             </nav>
             <div class="flex items-center space-x-4">
-                <span id="adminName" class="font-medium hidden md:block"></span>
-                <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
+                <span id="adminName" class="font-bold hidden md:block"></span>
+                <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
                     Logout
                 </button>
             </div>
         </div>
         <!-- Mobile Navigation -->
-        <nav id="mobile-menu" class="hidden md:hidden bg-blue-700 p-4 space-y-2">
-            <a href="#manage-news" class="block py-2 px-4 hover:bg-blue-600 rounded-md transition-colors duration-200">Manage News</a>
-            <a href="#manage-schedules" class="block py-2 px-4 hover:bg-blue-600 rounded-md transition-colors duration-200">Manage Schedules</a>
-            <a href="#manage-papers" class="block py-2 px-4 hover:bg-blue-600 rounded-md transition-colors duration-200">Manage Papers</a>
-            <a href="#manage-users" class="block py-2 px-4 hover:bg-blue-600 rounded-md transition-colors duration-200">Manage Users</a>
+        <nav id="mobile-menu" class="hidden md:hidden bg-blue-800 p-4 space-y-2">
+            <a href="#manage-news" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage News</a>
+            <a href="#manage-schedules" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Schedules</a>
+            <a href="#manage-papers" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Papers</a>
+            <a href="#manage-users" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Users</a>
         </nav>
     </header>
 
     <!-- Main Content -->
     <main class="container mx-auto p-4 flex-grow">
-        <h2 class="text-3xl font-extrabold text-center text-gray-900 my-8">
+        <h2 class="text-4xl font-extrabold text-center text-gray-900 my-8">
             Manage Class Portal Content
         </h2>
-        
+
         <div class="space-y-12">
             <!-- Manage Users Section -->
-            <section id="manage-users" class="p-8 bg-white rounded-xl shadow-lg">
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Registered Users</h3>
+            <section id="manage-users" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Registered Users</h3>
                 <div id="users-list" class="overflow-x-auto">
                     <!-- Users table will be dynamically loaded here -->
                 </div>
@@ -77,34 +77,40 @@
             </section>
 
             <!-- Add News and Updates Section -->
-            <section id="manage-news" class="p-8 bg-white rounded-xl shadow-lg">
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Add New News/Update</h3>
-                <form id="addNewsForm" class="space-y-4">
+            <section id="manage-news" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">News & Updates</h3>
+                <form id="addNewsForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New News/Update</h4>
                     <div>
                         <label for="newsTitle" class="block text-sm font-medium text-gray-700">Title</label>
-                        <input id="newsTitle" name="newsTitle" type="text" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <input id="newsTitle" name="newsTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
                         <label for="newsContent" class="block text-sm font-medium text-gray-700">Content</label>
-                        <textarea id="newsContent" name="newsContent" rows="4" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                        <textarea id="newsContent" name="newsContent" rows="4" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
                     </div>
-                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
                         Publish News
                     </button>
                 </form>
                 <div id="newsMessage" class="text-center text-sm mt-4"></div>
+                
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Published News</h4>
+                <div id="published-news-list" class="space-y-4">
+                    <!-- Published news will be dynamically loaded here -->
+                </div>
             </section>
 
             <!-- Add Schedules Section -->
-            <section id="manage-schedules" class="p-8 bg-white rounded-xl shadow-lg">
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Add Class/Exam Schedule</h3>
-                <p class="text-sm text-gray-500 mb-4">Enter the schedule details below. You can add more rows as needed.</p>
-                <form id="addScheduleForm" class="space-y-4">
+            <section id="manage-schedules" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Class/Exam Schedules</h3>
+                <form id="addScheduleForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New Schedule</h4>
                     <div>
                         <label for="scheduleTitle" class="block text-sm font-medium text-gray-700">Schedule Title (e.g., "Mid-term Exam Schedule")</label>
-                        <input id="scheduleTitle" name="scheduleTitle" type="text" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <input id="scheduleTitle" name="scheduleTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
-                    <div id="schedule-table-container" class="overflow-x-auto border border-gray-200 rounded-md">
+                    <div id="schedule-table-container" class="overflow-x-auto border border-gray-200 rounded-lg">
                         <table id="schedule-table" class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -117,51 +123,83 @@
                             <tbody id="schedule-body" class="bg-white divide-y divide-gray-200">
                                 <!-- Initial row for input -->
                                 <tr>
-                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell"></td>
-                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell"></td>
-                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell"></td>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell rounded-md"></td>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell rounded-md"></td>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell rounded-md"></td>
                                     <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="flex space-x-2">
-                        <button type="button" id="add-row-btn" class="flex-grow flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button type="button" id="add-row-btn" class="flex-grow flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
                             Add Row
                         </button>
-                        <button type="submit" class="flex-grow flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <button type="submit" class="flex-grow flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
                             Publish Schedule
                         </button>
                     </div>
                 </form>
                 <div id="scheduleMessage" class="text-center text-sm mt-4"></div>
+
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Published Schedules</h4>
+                <div id="published-schedules-list" class="space-y-4">
+                    <!-- Published schedules will be dynamically loaded here -->
+                </div>
             </section>
 
             <!-- Upload Previous Year Q Papers Section -->
-            <section id="manage-papers" class="p-8 bg-white rounded-xl shadow-lg">
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Upload Previous Year Question Paper</h3>
-                <form id="addPaperForm" class="space-y-4">
+            <section id="manage-papers" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Question Papers</h3>
+                <form id="addPaperForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Upload New Question Paper</h4>
                     <div>
-                        <label for="paperTitle" class="block text-sm font-medium text-gray-700">Title (e.g., "Constitutional Law - 2023")</label>
-                        <input id="paperTitle" name="paperTitle" type="text" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <label for="paperTitle" class="block text-sm font-medium text-gray-700">Title (e.g., "Engineering Physics - 2023")</label>
+                        <input id="paperTitle" name="paperTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
                         <label for="paperUrl" class="block text-sm font-medium text-gray-700">Paper URL (e.g., Google Drive link)</label>
-                        <input id="paperUrl" name="paperUrl" type="url" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <input id="paperUrl" name="paperUrl" type="url" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
-                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
                         Upload Paper
                     </button>
                 </form>
                 <div id="paperMessage" class="text-center text-sm mt-4"></div>
+
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Published Question Papers</h4>
+                <div id="published-papers-list" class="space-y-4">
+                    <!-- Published papers will be dynamically loaded here -->
+                </div>
             </section>
         </div>
-    </main>
 
+        <!-- Confirmation Modal -->
+        <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Are you sure?</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500" id="modal-text">
+                            Do you really want to delete this item? This action cannot be undone.
+                        </p>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Delete
+                        </button>
+                        <button id="cancel-delete-btn" class="mt-3 px-4 py-2 bg-gray-200 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-300 focus:outline-none">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { doc, getDoc, addDoc, collection, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { doc, getDoc, addDoc, collection, getDocs, updateDoc, onSnapshot, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
         const adminNameSpan = document.getElementById('adminName');
         const logoutBtn = document.getElementById('logoutBtn');
@@ -173,11 +211,19 @@
         const paperMessage = document.getElementById('paperMessage');
         const usersListDiv = document.getElementById('users-list');
         const usersMessageDiv = document.getElementById('usersMessage');
+        const publishedNewsList = document.getElementById('published-news-list');
+        const publishedSchedulesList = document.getElementById('published-schedules-list');
+        const publishedPapersList = document.getElementById('published-papers-list');
         const menuBtn = document.getElementById('menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-
         const addRowBtn = document.getElementById('add-row-btn');
         const scheduleBody = document.getElementById('schedule-body');
+
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+
+        let itemToDelete = null;
 
         // Toggle mobile menu visibility
         menuBtn.addEventListener('click', () => {
@@ -195,17 +241,12 @@
         const addScheduleRow = () => {
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell"></td>
-                <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell"></td>
-                <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell"></td>
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell rounded-md"></td>
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell rounded-md"></td>
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell rounded-md"></td>
                 <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
             `;
             scheduleBody.appendChild(newRow);
-
-            // Re-attach event listeners for remove buttons
-            newRow.querySelector('.remove-row-btn').addEventListener('click', (e) => {
-                e.target.closest('tr').remove();
-            });
         };
 
         // Event listener for the "Add Row" button
@@ -221,13 +262,22 @@
         // Check user authentication status and role
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDocRef = doc(db, 'users', user.uid);
-                const userDocSnap = await getDoc(userDocRef);
+                try {
+                    const userDocRef = doc(db, `users`, user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
 
-                if (userDocSnap.exists() && userDocSnap.data().role === 'admin') {
-                    adminNameSpan.textContent = userDocSnap.data().name || 'Admin';
-                    fetchUsers();
-                } else {
+                    if (userDocSnap.exists() && userDocSnap.data().role === 'admin') {
+                        adminNameSpan.textContent = userDocSnap.data().name || 'Admin';
+                        fetchUsers();
+                        fetchNews();
+                        fetchSchedules();
+                        fetchPapers();
+                    } else {
+                        await signOut(auth);
+                        window.location.href = 'admin-login.html';
+                    }
+                } catch (error) {
+                    console.error("Error during authentication check:", error);
                     await signOut(auth);
                     window.location.href = 'admin-login.html';
                 }
@@ -247,16 +297,46 @@
             }
         });
 
-        // Function to fetch and display users
-        const fetchUsers = async () => {
-            usersListDiv.innerHTML = `<div class="text-center text-gray-500">Loading users...</div>`;
+        // Function to handle the delete operation
+        const handleDelete = async () => {
+            if (!itemToDelete) return;
+            
+            const { collectionName, id } = itemToDelete;
             try {
-                const usersCollection = collection(db, 'users');
-                const usersSnapshot = await getDocs(usersCollection);
-                
+                const docRef = doc(db, collectionName, id);
+                await deleteDoc(docRef);
+                // The onSnapshot listeners will handle UI updates
+                closeModal();
+            } catch (error) {
+                console.error("Error deleting document:", error);
+                // Handle the error (e.g., show a temporary message)
+                closeModal();
+            }
+            itemToDelete = null;
+        };
+
+        const showModal = (collectionName, id, title) => {
+            itemToDelete = { collectionName, id };
+            document.getElementById('modal-text').textContent = `Do you really want to delete "${title}"? This action cannot be undone.`;
+            confirmationModal.classList.remove('hidden');
+        };
+
+        const closeModal = () => {
+            confirmationModal.classList.add('hidden');
+            itemToDelete = null;
+        };
+
+        confirmDeleteBtn.addEventListener('click', handleDelete);
+        cancelDeleteBtn.addEventListener('click', closeModal);
+
+        // Function to fetch and display users using onSnapshot for real-time updates
+        const fetchUsers = () => {
+            usersListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading users...</div>`;
+            const usersCollectionRef = collection(db, 'users');
+            onSnapshot(usersCollectionRef, (snapshot) => {
                 let usersHtml = `
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
@@ -268,7 +348,7 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                 `;
                 
-                usersSnapshot.forEach(doc => {
+                snapshot.forEach(doc => {
                     const user = doc.data();
                     const status = user.status || 'pending';
                     const isApproved = status === 'approved';
@@ -280,8 +360,8 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.email}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.batch}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm ${statusColor}">${status}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                ${!isApproved ? `<button data-id="${doc.id}" class="approve-btn text-blue-600 hover:text-blue-900">Approve</button>` : `<span class="text-gray-400">Approved</span>`}
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                ${!isApproved ? `<button data-id="${doc.id}" class="approve-btn text-blue-600 hover:text-blue-900 font-bold transition duration-200">Approve</button>` : `<span class="text-gray-400">Approved</span>`}
                             </td>
                         </tr>
                     `;
@@ -301,10 +381,10 @@
                     });
                 });
 
-            } catch (error) {
+            }, (error) => {
                 console.error("Error fetching users:", error);
-                usersListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load users.</div>`;
-            }
+                usersListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load users. Please check your permissions.</div>`;
+            });
         };
 
         const approveUser = async (userId) => {
@@ -315,7 +395,6 @@
                 });
                 usersMessageDiv.textContent = 'User approved successfully!';
                 usersMessageDiv.className = 'text-green-600 mt-2';
-                fetchUsers(); // Refresh the user list
             } catch (error) {
                 console.error("Error approving user:", error);
                 usersMessageDiv.textContent = 'Failed to approve user.';
@@ -323,28 +402,204 @@
             }
         };
 
-        // Event listener for adding news
+        // Function to fetch and display news
+        const fetchNews = () => {
+            publishedNewsList.innerHTML = `<div class="text-center text-gray-500 p-4">Loading news...</div>`;
+            const newsCollectionRef = collection(db, 'news');
+            onSnapshot(newsCollectionRef, (snapshot) => {
+                let newsHtml = '';
+                if (snapshot.empty) {
+                    newsHtml = '<p class="text-center text-gray-500">No news published yet.</p>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const newsItem = doc.data();
+                        newsHtml += `
+                            <div class="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+                                <h5 class="text-lg font-bold">${newsItem.title}</h5>
+                                <p class="text-gray-600 mt-1">${newsItem.content}</p>
+                                <div class="mt-4 flex space-x-2 justify-end">
+                                    <button data-id="${doc.id}" data-title="${newsItem.title}" data-content="${newsItem.content}" class="edit-news-btn text-blue-600 hover:text-blue-800 font-bold">Edit</button>
+                                    <button data-id="${doc.id}" data-title="${newsItem.title}" class="delete-news-btn text-red-600 hover:text-red-800 font-bold">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                publishedNewsList.innerHTML = newsHtml;
+                
+                // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.delete-news-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('news', id, title);
+                    });
+                });
+                // Edit button functionality to be implemented
+                document.querySelectorAll('.edit-news-btn').forEach(btn => {
+                     btn.addEventListener('click', (e) => {
+                         const id = e.target.getAttribute('data-id');
+                         const title = e.target.getAttribute('data-title');
+                         const content = e.target.getAttribute('data-content');
+                         // Populate the form with current data for editing
+                         addNewsForm.newsTitle.value = title;
+                         addNewsForm.newsContent.value = content;
+                         addNewsForm.querySelector('button[type="submit"]').textContent = 'Update News';
+                         addNewsForm.dataset.editingId = id;
+                     });
+                 });
+            });
+        };
+
+        // Function to fetch and display schedules
+        const fetchSchedules = () => {
+            publishedSchedulesList.innerHTML = `<div class="text-center text-gray-500 p-4">Loading schedules...</div>`;
+            const schedulesCollectionRef = collection(db, 'schedules');
+            onSnapshot(schedulesCollectionRef, (snapshot) => {
+                let schedulesHtml = '';
+                if (snapshot.empty) {
+                    schedulesHtml = '<p class="text-center text-gray-500">No schedules published yet.</p>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const schedule = doc.data();
+                        const scheduleData = JSON.parse(schedule.data);
+                        let tableRows = scheduleData.map(row => `
+                            <tr>
+                                <td class="px-4 py-2 text-sm text-gray-700 border-b">${row.day}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 border-b">${row.time}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 border-b">${row.subject}</td>
+                            </tr>
+                        `).join('');
+
+                        schedulesHtml += `
+                            <div class="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+                                <h5 class="text-lg font-bold">${schedule.title}</h5>
+                                <div class="mt-2 overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <tbody class="bg-white">
+                                            ${tableRows}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-4 flex space-x-2 justify-end">
+                                    <button data-id="${doc.id}" data-title="${schedule.title}" data-data='${schedule.data}' class="edit-schedule-btn text-blue-600 hover:text-blue-800 font-bold">Edit</button>
+                                    <button data-id="${doc.id}" data-title="${schedule.title}" class="delete-schedule-btn text-red-600 hover:text-red-800 font-bold">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                publishedSchedulesList.innerHTML = schedulesHtml;
+                 // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.delete-schedule-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('schedules', id, title);
+                    });
+                });
+                // Edit button functionality to be implemented
+                document.querySelectorAll('.edit-schedule-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                         const id = e.target.getAttribute('data-id');
+                         const title = e.target.getAttribute('data-title');
+                         const data = JSON.parse(e.target.getAttribute('data-data'));
+                         addScheduleForm.scheduleTitle.value = title;
+                         scheduleBody.innerHTML = '';
+                         data.forEach(item => {
+                            const newRow = document.createElement('tr');
+                            newRow.innerHTML = `
+                                <td class="px-4 py-2"><input type="text" value="${item.day}" class="w-full editable-cell rounded-md"></td>
+                                <td class="px-4 py-2"><input type="text" value="${item.time}" class="w-full editable-cell rounded-md"></td>
+                                <td class="px-4 py-2"><input type="text" value="${item.subject}" class="w-full editable-cell rounded-md"></td>
+                                <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+                            `;
+                            scheduleBody.appendChild(newRow);
+                         });
+                         addScheduleForm.querySelector('button[type="submit"]').textContent = 'Update Schedule';
+                         addScheduleForm.dataset.editingId = id;
+                     });
+                 });
+            });
+        };
+
+        // Function to fetch and display papers
+        const fetchPapers = () => {
+            publishedPapersList.innerHTML = `<div class="text-center text-gray-500 p-4">Loading papers...</div>`;
+            const papersCollectionRef = collection(db, 'papers');
+            onSnapshot(papersCollectionRef, (snapshot) => {
+                let papersHtml = '';
+                if (snapshot.empty) {
+                    papersHtml = '<p class="text-center text-gray-500">No papers uploaded yet.</p>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const paper = doc.data();
+                        papersHtml += `
+                            <div class="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between">
+                                <a href="${paper.url}" target="_blank" class="text-blue-600 hover:underline font-medium">${paper.title}</a>
+                                <div class="flex space-x-2">
+                                    <button data-id="${doc.id}" data-title="${paper.title}" data-url="${paper.url}" class="edit-paper-btn text-blue-600 hover:text-blue-800 font-bold">Edit</button>
+                                    <button data-id="${doc.id}" data-title="${paper.title}" class="delete-paper-btn text-red-600 hover:text-red-800 font-bold">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                publishedPapersList.innerHTML = papersHtml;
+                // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.delete-paper-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('papers', id, title);
+                    });
+                });
+                // Edit button functionality to be implemented
+                document.querySelectorAll('.edit-paper-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        const url = e.target.getAttribute('data-url');
+                        addPaperForm.paperTitle.value = title;
+                        addPaperForm.paperUrl.value = url;
+                        addPaperForm.querySelector('button[type="submit"]').textContent = 'Update Paper';
+                        addPaperForm.dataset.editingId = id;
+                    });
+                });
+            });
+        };
+
+        // Event listener for adding/updating news
         addNewsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const title = addNewsForm.newsTitle.value;
             const content = addNewsForm.newsContent.value;
+            const editingId = addNewsForm.dataset.editingId;
             try {
-                await addDoc(collection(db, 'news'), {
-                    title,
-                    content,
-                    date: new Date().toISOString()
-                });
-                newsMessage.textContent = 'News published successfully!';
+                if (editingId) {
+                    const docRef = doc(db, 'news', editingId);
+                    await updateDoc(docRef, { title, content });
+                    newsMessage.textContent = 'News updated successfully!';
+                } else {
+                    await addDoc(collection(db, 'news'), {
+                        title,
+                        content,
+                        date: new Date().toISOString()
+                    });
+                    newsMessage.textContent = 'News published successfully!';
+                }
                 newsMessage.className = 'text-green-600 mt-2';
                 addNewsForm.reset();
+                delete addNewsForm.dataset.editingId;
+                addNewsForm.querySelector('button[type="submit"]').textContent = 'Publish News';
             } catch (error) {
-                console.error("Error publishing news:", error);
-                newsMessage.textContent = 'Failed to publish news.';
+                console.error("Error publishing/updating news:", error);
+                newsMessage.textContent = `Failed to publish/update news: ${error.message}`;
                 newsMessage.className = 'text-red-600 mt-2';
             }
         });
 
-        // Event listener for adding schedules
+        // Event listener for adding/updating schedules
         addScheduleForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const title = addScheduleForm.scheduleTitle.value;
@@ -368,50 +623,69 @@
                 return;
             }
 
+            const editingId = addScheduleForm.dataset.editingId;
             try {
-                await addDoc(collection(db, 'schedules'), {
-                    title,
-                    data: JSON.stringify(scheduleData),
-                    date: new Date().toISOString()
-                });
-                scheduleMessage.textContent = 'Schedule published successfully!';
+                if (editingId) {
+                    const docRef = doc(db, 'schedules', editingId);
+                    await updateDoc(docRef, { title, data: JSON.stringify(scheduleData) });
+                    scheduleMessage.textContent = 'Schedule updated successfully!';
+                } else {
+                    await addDoc(collection(db, 'schedules'), {
+                        title,
+                        data: JSON.stringify(scheduleData),
+                        date: new Date().toISOString()
+                    });
+                    scheduleMessage.textContent = 'Schedule published successfully!';
+                }
                 scheduleMessage.className = 'text-green-600 mt-2';
                 addScheduleForm.reset();
+                delete addScheduleForm.dataset.editingId;
+                addScheduleForm.querySelector('button[type="submit"]').textContent = 'Publish Schedule';
                 scheduleBody.innerHTML = `
                     <tr>
-                        <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell"></td>
-                        <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell"></td>
-                        <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell"></td>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell rounded-md"></td>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell rounded-md"></td>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell rounded-md"></td>
                         <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
                     </tr>
                 `;
             } catch (error) {
-                console.error("Error publishing schedule:", error);
-                scheduleMessage.textContent = 'Failed to publish schedule.';
+                console.error("Error publishing/updating schedule:", error);
+                scheduleMessage.textContent = `Failed to publish/update schedule: ${error.message}`;
                 scheduleMessage.className = 'text-red-600 mt-2';
             }
         });
 
-        // Event listener for adding question papers
+        // Event listener for adding/updating question papers
         addPaperForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const title = addPaperForm.paperTitle.value;
             const url = addPaperForm.paperUrl.value;
+            const editingId = addPaperForm.dataset.editingId;
             try {
-                await addDoc(collection(db, 'papers'), {
-                    title,
-                    url,
-                    date: new Date().toISOString()
-                });
-                paperMessage.textContent = 'Question paper uploaded successfully!';
+                if (editingId) {
+                    const docRef = doc(db, 'papers', editingId);
+                    await updateDoc(docRef, { title, url });
+                    paperMessage.textContent = 'Question paper updated successfully!';
+                } else {
+                    await addDoc(collection(db, 'papers'), {
+                        title,
+                        url,
+                        date: new Date().toISOString()
+                    });
+                    paperMessage.textContent = 'Question paper uploaded successfully!';
+                }
                 paperMessage.className = 'text-green-600 mt-2';
                 addPaperForm.reset();
+                delete addPaperForm.dataset.editingId;
+                addPaperForm.querySelector('button[type="submit"]').textContent = 'Upload Paper';
             } catch (error) {
-                console.error("Error uploading paper:", error);
-                paperMessage.textContent = 'Failed to upload paper.';
+                console.error("Error uploading/updating paper:", error);
+                paperMessage.textContent = `Failed to upload/update paper: ${error.message}`;
                 paperMessage.className = 'text-red-600 mt-2';
             }
         });
+
     </script>
 </body>
 </html>
