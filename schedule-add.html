@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Add Schedule</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Header and Navigation Bar -->
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex items-center justify-between p-4">
+            <h1 class="text-3xl font-extrabold">Admin Portal</h1>
+            <nav class="space-x-8">
+                <a href="#" class="text-blue-200 text-lg font-medium">Dashboard</a>
+                <a href="#" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Add News</a>
+                <a href="#" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Approve Users</a>
+                <a href="#" id="logoutButton" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 flex-grow">
+        <h2 class="text-4xl font-extrabold text-center text-gray-900 my-8">
+            Add New Schedule
+        </h2>
+
+        <div class="p-6 bg-white rounded-2xl shadow-xl border border-gray-200">
+            <form id="scheduleForm" class="space-y-6">
+                <div>
+                    <label for="scheduleTitle" class="block text-sm font-medium text-gray-700">Schedule Title</label>
+                    <input type="text" id="scheduleTitle" name="scheduleTitle" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <hr class="my-4 border-gray-200">
+
+                <h3 class="text-2xl font-bold text-gray-800">Add Entries</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div>
+                        <label for="entryDay" class="block text-sm font-medium text-gray-700">Day</label>
+                        <input type="date" id="entryDay" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="entryTime" class="block text-sm font-medium text-gray-700">Time</label>
+                        <input type="time" id="entryTime" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="entrySubject" class="block text-sm font-medium text-gray-700">Subject</label>
+                        <input type="text" id="entrySubject" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <button type="button" id="addEntryBtn" class="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                            Add Entry
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Current Entries</h3>
+                    <div class="overflow-x-auto border border-gray-200 rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="entriesTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Entries will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-6">
+                    <button type="submit" class="py-3 px-6 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Publish Schedule
+                    </button>
+                </div>
+            </form>
+            <div id="message" class="text-center text-sm mt-4"></div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { doc, getDoc, collection, addDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        // Get DOM elements
+        const scheduleForm = document.getElementById('scheduleForm');
+        const addEntryBtn = document.getElementById('addEntryBtn');
+        const entriesTableBody = document.getElementById('entriesTableBody');
+        const scheduleTitleInput = document.getElementById('scheduleTitle');
+        const entryDayInput = document.getElementById('entryDay');
+        const entryTimeInput = document.getElementById('entryTime');
+        const entrySubjectInput = document.getElementById('entrySubject');
+        const messageDiv = document.getElementById('message');
+        const logoutButton = document.getElementById('logoutButton');
+
+        // State to hold schedule entries
+        let scheduleEntries = [];
+
+        // Check if the user is an admin
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (!userDocSnap.exists() || userDocSnap.data().role !== 'admin') {
+                    // User is not an admin, redirect to login
+                    window.location.href = 'login.html';
+                }
+            } else {
+                // User is not logged in, redirect to login
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Logout functionality
+        logoutButton.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("Error signing out:", error);
+            }
+        });
+
+        // Function to render the table of entries
+        const renderEntries = () => {
+            entriesTableBody.innerHTML = scheduleEntries.map((entry, index) => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 text-sm text-gray-700 border-b">${entry.day}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700 border-b">${entry.time}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700 border-b">${entry.subject}</td>
+                    <td class="px-4 py-2 text-center border-b">
+                        <button type="button" data-index="${index}" class="text-red-600 hover:text-red-900 font-semibold remove-entry-btn">
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        };
+
+        // Add a new entry to the schedule
+        addEntryBtn.addEventListener('click', () => {
+            const day = entryDayInput.value;
+            const time = entryTimeInput.value;
+            const subject = entrySubjectInput.value;
+
+            if (day && time && subject) {
+                scheduleEntries.push({ day, time, subject });
+                renderEntries();
+                entryDayInput.value = '';
+                entryTimeInput.value = '';
+                entrySubjectInput.value = '';
+            } else {
+                messageDiv.textContent = "Please fill in all entry fields.";
+                messageDiv.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Remove an entry from the schedule
+        entriesTableBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-entry-btn')) {
+                const index = parseInt(e.target.getAttribute('data-index'), 10);
+                scheduleEntries.splice(index, 1);
+                renderEntries();
+            }
+        });
+
+        // Submit the full schedule to Firestore
+        scheduleForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = scheduleTitleInput.value;
+
+            if (scheduleEntries.length === 0) {
+                messageDiv.textContent = "Please add at least one schedule entry.";
+                messageDiv.className = 'text-red-600 mt-2';
+                return;
+            }
+
+            try {
+                // Add the new schedule to the 'schedules' collection
+                await addDoc(collection(db, 'schedules'), {
+                    title: title,
+                    data: JSON.stringify(scheduleEntries) // Store entries as a JSON string
+                });
+
+                messageDiv.textContent = "Schedule published successfully!";
+                messageDiv.className = 'text-green-600 mt-2';
+                scheduleForm.reset();
+                scheduleEntries = [];
+                renderEntries();
+
+            } catch (error) {
+                console.error("Error publishing schedule:", error);
+                messageDiv.textContent = "Failed to publish schedule. Check console for details.";
+                messageDiv.className = 'text-red-600 mt-2';
+            }
+        });
+    </script>
+</body>
+</html>
