@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Portal - Question Papers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Header and Navigation Bar -->
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex items-center justify-between p-4">
+            <h1 class="text-3xl font-extrabold">Class Portal</h1>
+            <nav class="space-x-8">
+                <a href="#" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Home</a>
+                <a href="#" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">News</a>
+                <a href="schedule-page.html" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Schedules</a>
+                <a href="question-paper-page.html" class="text-blue-200 text-lg font-medium">Papers</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 flex-grow">
+        <h2 class="text-4xl font-extrabold text-center text-gray-900 my-8">
+            Previous Year Question Papers
+        </h2>
+
+        <div class="p-6 bg-white rounded-2xl shadow-xl border border-gray-200">
+            <div id="papers-container" class="overflow-x-auto">
+                <!-- Papers table will be dynamically loaded here -->
+                <div class="text-center text-gray-500 p-4">Loading question papers...</div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { db } from './firebase-config.js';
+        import { collection, onSnapshot, orderBy, query } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        const papersContainer = document.getElementById('papers-container');
+
+        // Function to fetch and display question papers in real-time
+        const fetchPapers = () => {
+            const papersCollectionRef = collection(db, 'papers');
+            const q = query(papersCollectionRef);
+
+            onSnapshot(q, (snapshot) => {
+                let papersHtml = '';
+                if (snapshot.empty) {
+                    papersHtml = '<p class="text-center text-gray-500 text-lg">No question papers have been uploaded yet.</p>';
+                } else {
+                    papersHtml = `
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                    `;
+                    snapshot.forEach(doc => {
+                        const paper = doc.data();
+                        papersHtml += `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    ${paper.title}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                    <a href="${paper.url}" target="_blank" class="text-blue-600 hover:text-blue-900 font-bold transition duration-200">
+                                        View Paper
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    papersHtml += `
+                            </tbody>
+                        </table>
+                    `;
+                }
+                papersContainer.innerHTML = papersHtml;
+            }, (error) => {
+                console.error("Error fetching papers:", error);
+                papersContainer.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md text-center">
+                    Failed to load question papers. Please try again later.
+                </div>`;
+            });
+        };
+
+        // Call the function to fetch papers when the page loads
+        document.addEventListener('DOMContentLoaded', fetchPapers);
+    </script>
+</body>
+</html>
