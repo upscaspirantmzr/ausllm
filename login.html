@@ -3,100 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Class Portal - Login</title>
+    <title>Login - Class Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f1f5f9;
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
-    <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
-        <h2 class="text-3xl font-extrabold text-center text-gray-900">
-            Sign in to your account
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-6">
+            Log In to Class Portal
         </h2>
-        <form id="loginForm" class="mt-8 space-y-6">
+        <form id="loginForm" class="space-y-4">
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-                <input id="email" name="email" type="email" autocomplete="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <input id="email" name="email" type="email" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input id="password" name="password" type="password" autocomplete="current-password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <input id="password" name="password" type="password" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
-            <div>
-                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Sign in
-                </button>
-            </div>
+            <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                Log In
+            </button>
         </form>
-        <div id="message" class="text-center text-sm"></div>
-        <div class="text-center text-sm">
-            Don't have an account?
-            <a href="register.html" class="font-medium text-blue-600 hover:text-blue-500">
-                Register here
-            </a>
-        </div>
+        <div id="message" class="text-center text-sm mt-4"></div>
+        <p class="mt-6 text-center text-sm text-gray-600">
+            Don't have an account? <a href="register.html" class="font-medium text-blue-600 hover:text-blue-500">Register here</a>
+        </p>
+        <p class="mt-2 text-center text-sm text-gray-600">
+            Are you an admin? <a href="admin-login.html" class="font-medium text-blue-600 hover:text-blue-500">Log in here</a>
+        </p>
     </div>
 
     <script type="module">
-        import { auth } from './firebase-config.js';
-        import { signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-
-        // Check if a user is already signed in on page load
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in, redirect to the dashboard
-                window.location.href = 'dashboard.html';
-            }
-        });
+        import { auth, db } from './firebase-config.js';
+        import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
         const loginForm = document.getElementById('loginForm');
         const messageDiv = document.getElementById('message');
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const email = loginForm.email.value;
             const password = loginForm.password.value;
 
             try {
-                // Clear any previous messages
-                messageDiv.textContent = 'Logging in...';
-                messageDiv.className = 'text-center text-sm text-gray-500';
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
 
-                // Sign in user with email and password
-                await signInWithEmailAndPassword(auth, email, password);
+                // Check user status from Firestore
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDocSnap = await getDoc(userDocRef);
 
-                // No need to redirect here, the onAuthStateChanged listener handles it
-                // and it's better for real-time changes
-                messageDiv.textContent = 'Login successful! Redirecting...';
-                messageDiv.className = 'text-center text-sm text-green-600';
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    if (userData.status === 'approved') {
+                        // Redirect to the main page or dashboard
+                        window.location.href = 'index.html'; // Assuming an index.html as the main page
+                    } else if (userData.status === 'pending') {
+                        messageDiv.textContent = 'Your account is pending approval.';
+                        messageDiv.className = 'text-yellow-600 mt-2';
+                    }
+                } else {
+                    messageDiv.textContent = 'User data not found.';
+                    messageDiv.className = 'text-red-600 mt-2';
+                }
 
             } catch (error) {
                 console.error("Error during login:", error);
-                let errorMessage = 'An error occurred. Please try again.';
-
-                // Provide a more user-friendly error message based on Firebase error codes
-                switch (error.code) {
-                    case 'auth/wrong-password':
-                    case 'auth/user-not-found':
-                    case 'auth/invalid-credential':
-                        errorMessage = 'Invalid email or password.';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'The email address is not valid.';
-                        break;
-                    default:
-                        errorMessage = `Error: ${error.message}`;
-                        break;
+                let errorMessage = 'Invalid email or password.';
+                if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Invalid email or password.';
                 }
-
                 messageDiv.textContent = errorMessage;
-                messageDiv.className = 'text-center text-sm text-red-600';
+                messageDiv.className = 'text-red-600 mt-2';
             }
         });
     </script>
