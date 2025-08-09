@@ -12,32 +12,61 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
 
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
-        <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-6">
-            Log In to Class Portal
-        </h2>
-        <form id="loginForm" class="space-y-4">
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-                <input id="email" name="email" type="email" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input id="password" name="password" type="password" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
-                Log In
-            </button>
-        </form>
-        <div id="message" class="text-center text-sm mt-4"></div>
-        <p class="mt-6 text-center text-sm text-gray-600">
-            Don't have an account? <a href="register.html" class="font-medium text-blue-600 hover:text-blue-500">Register here</a>
-        </p>
-        <p class="mt-2 text-center text-sm text-gray-600">
-            Are you an admin? <a href="admin-login.html" class="font-medium text-blue-600 hover:text-blue-500">Log in here</a>
-        </p>
+    <!-- Notifications Placeholder -->
+    <div class="w-full max-w-2xl mx-auto mb-4 bg-white p-4 rounded-xl shadow-lg">
+        <h3 class="font-bold text-red-600">Notifications</h3>
+        <hr class="my-2 border-gray-200">
+        <p class="text-gray-500 text-sm">No new notification found</p>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl flex flex-col md:flex-row items-center justify-center">
+        <!-- Logo Section -->
+        <div class="flex-shrink-0 mb-6 md:mb-0 md:mr-8 text-center">
+            <img src="https://placehold.co/128x128/9CA3AF/374151?text=Logo" alt="University Logo" class="mx-auto rounded-full">
+            <p class="mt-4 text-sm text-gray-600">अप्रमत्तेन वेद्धव्यम्</p>
+        </div>
+
+        <!-- Login Form Section -->
+        <div class="w-full">
+            <h2 class="text-xl font-semibold text-center text-gray-800 mb-6">
+                Sign in Registered User
+            </h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                    <input id="email" name="email" type="email" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input id="password" name="password" type="password" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="flex space-x-4">
+                    <button type="submit" class="w-1/2 flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                        Sign In
+                    </button>
+                    <a href="#" class="w-1/2 flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-gray-900 bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 transition duration-200">
+                        Forgot Password ?
+                    </a>
+                </div>
+            </form>
+            <div id="message" class="text-center text-sm mt-4"></div>
+            <p class="mt-6 text-center text-sm text-gray-600">
+                Don't have an account? <a href="register.html" class="font-medium text-blue-600 hover:text-blue-500">Register here</a>
+            </p>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Are you an admin? <a href="admin-login.html" class="font-medium text-blue-600 hover:text-blue-500">Log in here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-center text-gray-600 text-sm">
+        <p>Licenced to COTTON UNIVERSITY</p>
+        <p>Copyright © Bohniman Systems Pvt. Ltd. All rights reserved.</p>
+        <p class="mt-2 text-xs">Best viewed in Google Chrome.</p>
     </div>
 
     <script type="module">
