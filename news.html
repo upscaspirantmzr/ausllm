@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Portal - News & Updates</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Latest News & Updates</h1>
+            <a href="dashboard.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Back to Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 flex-grow">
+        <div id="news-container" class="space-y-6">
+            <!-- News items will be loaded here dynamically -->
+        </div>
+        <div id="loading-spinner" class="hidden text-center mt-8">
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto"></div>
+            <p class="mt-2 text-gray-600">Loading news...</p>
+        </div>
+    </main>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { collection, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        const newsContainer = document.getElementById('news-container');
+        const loadingSpinner = document.getElementById('loading-spinner');
+
+        // Check user authentication status on page load
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // User is not signed in, redirect to login page
+                window.location.href = 'index.html';
+            } else {
+                // User is signed in, start loading news
+                fetchNews();
+            }
+        });
+
+        // Function to fetch news from Firestore in real-time
+        const fetchNews = () => {
+            loadingSpinner.classList.remove('hidden');
+            
+            // Reference to the 'news' collection
+            const newsRef = collection(db, 'news');
+            // Create a query to get news ordered by date (or some other field)
+            const q = query(newsRef); // Note: I am not using orderBy to avoid the need for indexes. Data will be sorted in memory.
+            
+            // onSnapshot listens for real-time changes
+            onSnapshot(q, (querySnapshot) => {
+                loadingSpinner.classList.add('hidden');
+                newsContainer.innerHTML = ''; // Clear previous content
+
+                const newsItems = [];
+                querySnapshot.forEach((doc) => {
+                    newsItems.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Sort news items by date in descending order
+                newsItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                if (newsItems.length === 0) {
+                    newsContainer.innerHTML = '<div class="p-6 bg-white rounded-xl shadow-lg text-center text-gray-500">No news updates available.</div>';
+                } else {
+                    newsItems.forEach(item => {
+                        const newsCard = document.createElement('div');
+                        newsCard.className = 'p-6 bg-white rounded-xl shadow-lg';
+                        newsCard.innerHTML = `
+                            <h3 class="text-xl font-semibold text-gray-800">${item.title}</h3>
+                            <p class="mt-2 text-gray-600">${item.content}</p>
+                            <p class="mt-4 text-sm text-gray-400">Published on: ${new Date(item.date).toLocaleDateString()}</p>
+                        `;
+                        newsContainer.appendChild(newsCard);
+                    });
+                }
+            }, (error) => {
+                console.error("Error fetching news:", error);
+                loadingSpinner.classList.add('hidden');
+                newsContainer.innerHTML = '<div class="p-6 bg-red-100 rounded-xl shadow-lg text-center text-red-600">Failed to load news. Please try again.</div>';
+            });
+        };
+    </script>
+</body>
+</html>
