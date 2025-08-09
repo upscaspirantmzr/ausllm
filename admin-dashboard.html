@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Portal - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Style for the editable table cells */
+        .editable-cell {
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .editable-cell:focus {
+            background-color: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Header and Navigation Bar -->
+    <header class="bg-blue-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex items-center justify-between p-4">
+            <h1 class="text-2xl font-bold">Admin Panel</h1>
+            <!-- Hamburger Menu Button (for mobile) -->
+            <button id="menu-btn" class="md:hidden text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <!-- Desktop Navigation -->
+            <nav id="desktop-menu" class="hidden md:flex space-x-6">
+                <a href="#manage-news" class="hover:text-blue-200 transition-colors duration-200">Manage News</a>
+                <a href="#manage-schedules" class="hover:text-blue-200 transition-colors duration-200">Manage Schedules</a>
+                <a href="#manage-papers" class="hover:text-blue-200 transition-colors duration-200">Manage Papers</a>
+                <a href="#manage-users" class="hover:text-blue-200 transition-colors duration-200">Manage Users</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <span id="adminName" class="font-medium hidden md:block"></span>
+                <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
+                    Logout
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Navigation -->
+        <nav id="mobile-menu" class="hidden md:hidden bg-blue-700 p-4 space-y-2">
+            <a href="#manage-news" class="block py-2 px-4 hover:bg-blue-600 rounded-md transition-colors duration-200">Manage News</a>
+            <a href="#manage-schedules" class="block py-2 px-4 hover:bg-blue-600 rounded-md transition-colors duration-200">Manage Schedules</a>
+            <a href="#manage-papers" class="block py-2 px-4 hover:bg-blue-600 rounded-md transition-colors duration-200">Manage Papers</a>
+            <a href="#manage-users" class="block py-2 px-4 hover:bg-blue-600 rounded-md transition-colors duration-200">Manage Users</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 flex-grow">
+        <h2 class="text-3xl font-extrabold text-center text-gray-900 my-8">
+            Manage Class Portal Content
+        </h2>
+        
+        <div class="space-y-12">
+            <!-- Manage Users Section -->
+            <section id="manage-users" class="p-8 bg-white rounded-xl shadow-lg">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Registered Users</h3>
+                <div id="users-list" class="overflow-x-auto">
+                    <!-- Users table will be dynamically loaded here -->
+                </div>
+                <div id="usersMessage" class="text-center text-sm mt-4"></div>
+            </section>
+
+            <!-- Add News and Updates Section -->
+            <section id="manage-news" class="p-8 bg-white rounded-xl shadow-lg">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Add New News/Update</h3>
+                <form id="addNewsForm" class="space-y-4">
+                    <div>
+                        <label for="newsTitle" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input id="newsTitle" name="newsTitle" type="text" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="newsContent" class="block text-sm font-medium text-gray-700">Content</label>
+                        <textarea id="newsContent" name="newsContent" rows="4" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Publish News
+                    </button>
+                </form>
+                <div id="newsMessage" class="text-center text-sm mt-4"></div>
+            </section>
+
+            <!-- Add Schedules Section -->
+            <section id="manage-schedules" class="p-8 bg-white rounded-xl shadow-lg">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Add Class/Exam Schedule</h3>
+                <p class="text-sm text-gray-500 mb-4">Enter the schedule details below. You can add more rows as needed.</p>
+                <form id="addScheduleForm" class="space-y-4">
+                    <div>
+                        <label for="scheduleTitle" class="block text-sm font-medium text-gray-700">Schedule Title (e.g., "Mid-term Exam Schedule")</label>
+                        <input id="scheduleTitle" name="scheduleTitle" type="text" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div id="schedule-table-container" class="overflow-x-auto border border-gray-200 rounded-md">
+                        <table id="schedule-table" class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="schedule-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Initial row for input -->
+                                <tr>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell"></td>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell"></td>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell"></td>
+                                    <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="button" id="add-row-btn" class="flex-grow flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Add Row
+                        </button>
+                        <button type="submit" class="flex-grow flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Publish Schedule
+                        </button>
+                    </div>
+                </form>
+                <div id="scheduleMessage" class="text-center text-sm mt-4"></div>
+            </section>
+
+            <!-- Upload Previous Year Q Papers Section -->
+            <section id="manage-papers" class="p-8 bg-white rounded-xl shadow-lg">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Upload Previous Year Question Paper</h3>
+                <form id="addPaperForm" class="space-y-4">
+                    <div>
+                        <label for="paperTitle" class="block text-sm font-medium text-gray-700">Title (e.g., "Engineering Physics - 2023")</label>
+                        <input id="paperTitle" name="paperTitle" type="text" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="paperUrl" class="block text-sm font-medium text-gray-700">Paper URL (e.g., Google Drive link)</label>
+                        <input id="paperUrl" name="paperUrl" type="url" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Upload Paper
+                    </button>
+                </form>
+                <div id="paperMessage" class="text-center text-sm mt-4"></div>
+            </section>
+        </div>
+    </main>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { doc, getDoc, addDoc, collection, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        const adminNameSpan = document.getElementById('adminName');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const addNewsForm = document.getElementById('addNewsForm');
+        const addScheduleForm = document.getElementById('addScheduleForm');
+        const addPaperForm = document.getElementById('addPaperForm');
+        const newsMessage = document.getElementById('newsMessage');
+        const scheduleMessage = document.getElementById('scheduleMessage');
+        const paperMessage = document.getElementById('paperMessage');
+        const usersListDiv = document.getElementById('users-list');
+        const usersMessageDiv = document.getElementById('usersMessage');
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        const addRowBtn = document.getElementById('add-row-btn');
+        const scheduleBody = document.getElementById('schedule-body');
+
+        // Toggle mobile menu visibility
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Add a new row to the schedule table
+        const addScheduleRow = () => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell"></td>
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell"></td>
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell"></td>
+                <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+            `;
+            scheduleBody.appendChild(newRow);
+
+            // Re-attach event listeners for remove buttons
+            newRow.querySelector('.remove-row-btn').addEventListener('click', (e) => {
+                e.target.closest('tr').remove();
+            });
+        };
+
+        // Event listener for the "Add Row" button
+        addRowBtn.addEventListener('click', addScheduleRow);
+
+        // Event listener for dynamically added remove buttons (delegated)
+        scheduleBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-row-btn')) {
+                e.target.closest('tr').remove();
+            }
+        });
+
+        // Check user authentication status and role
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists() && userDocSnap.data().role === 'admin') {
+                    adminNameSpan.textContent = userDocSnap.data().name || 'Admin';
+                    fetchUsers();
+                } else {
+                    await signOut(auth);
+                    window.location.href = 'admin-login.html';
+                }
+            } else {
+                window.location.href = 'admin-login.html';
+            }
+        });
+
+        // Add event listener for the logout button
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Error signing out:", error);
+                // Optional: display an error message
+                alert("An error occurred during logout. Please try again.");
+            }
+        });
+
+        // Function to fetch and display users
+        const fetchUsers = async () => {
+            usersListDiv.innerHTML = `<div class="text-center text-gray-500">Loading users...</div>`;
+            try {
+                const usersCollection = collection(db, 'users');
+                const usersSnapshot = await getDocs(usersCollection);
+                
+                let usersHtml = `
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    const status = user.status || 'pending';
+                    const isApproved = status === 'approved';
+                    const statusColor = isApproved ? 'text-green-600' : 'text-yellow-600';
+
+                    usersHtml += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.email}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.batch}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm ${statusColor}">${status}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                ${!isApproved ? `<button data-id="${doc.id}" class="approve-btn text-blue-600 hover:text-blue-900">Approve</button>` : `<span class="text-gray-400">Approved</span>`}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                usersHtml += `
+                        </tbody>
+                    </table>
+                `;
+                usersListDiv.innerHTML = usersHtml;
+
+                // Add event listeners for the new approve buttons
+                document.querySelectorAll('.approve-btn').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const userId = e.target.getAttribute('data-id');
+                        await approveUser(userId);
+                    });
+                });
+
+            } catch (error) {
+                console.error("Error fetching users:", error);
+                usersListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load users.</div>`;
+            }
+        };
+
+        const approveUser = async (userId) => {
+            try {
+                const userDocRef = doc(db, 'users', userId);
+                await updateDoc(userDocRef, {
+                    status: 'approved'
+                });
+                usersMessageDiv.textContent = 'User approved successfully!';
+                usersMessageDiv.className = 'text-green-600 mt-2';
+                fetchUsers(); // Refresh the user list
+            } catch (error) {
+                console.error("Error approving user:", error);
+                usersMessageDiv.textContent = 'Failed to approve user.';
+                usersMessageDiv.className = 'text-red-600 mt-2';
+            }
+        };
+
+        // Event listener for adding news
+        addNewsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = addNewsForm.newsTitle.value;
+            const content = addNewsForm.newsContent.value;
+            try {
+                await addDoc(collection(db, 'news'), {
+                    title,
+                    content,
+                    date: new Date().toISOString()
+                });
+                newsMessage.textContent = 'News published successfully!';
+                newsMessage.className = 'text-green-600 mt-2';
+                addNewsForm.reset();
+            } catch (error) {
+                console.error("Error publishing news:", error);
+                newsMessage.textContent = 'Failed to publish news.';
+                newsMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Event listener for adding schedules
+        addScheduleForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = addScheduleForm.scheduleTitle.value;
+            const scheduleRows = scheduleBody.querySelectorAll('tr');
+            const scheduleData = [];
+
+            scheduleRows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const day = inputs[0].value;
+                const time = inputs[1].value;
+                const subject = inputs[2].value;
+
+                if (day && time && subject) {
+                    scheduleData.push({ day, time, subject });
+                }
+            });
+
+            if (scheduleData.length === 0) {
+                scheduleMessage.textContent = 'Please add at least one valid schedule entry.';
+                scheduleMessage.className = 'text-red-600 mt-2';
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, 'schedules'), {
+                    title,
+                    data: JSON.stringify(scheduleData),
+                    date: new Date().toISOString()
+                });
+                scheduleMessage.textContent = 'Schedule published successfully!';
+                scheduleMessage.className = 'text-green-600 mt-2';
+                addScheduleForm.reset();
+                scheduleBody.innerHTML = `
+                    <tr>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell"></td>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell"></td>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell"></td>
+                        <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error("Error publishing schedule:", error);
+                scheduleMessage.textContent = 'Failed to publish schedule.';
+                scheduleMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Event listener for adding question papers
+        addPaperForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = addPaperForm.paperTitle.value;
+            const url = addPaperForm.paperUrl.value;
+            try {
+                await addDoc(collection(db, 'papers'), {
+                    title,
+                    url,
+                    date: new Date().toISOString()
+                });
+                paperMessage.textContent = 'Question paper uploaded successfully!';
+                paperMessage.className = 'text-green-600 mt-2';
+                addPaperForm.reset();
+            } catch (error) {
+                console.error("Error uploading paper:", error);
+                paperMessage.textContent = 'Failed to upload paper.';
+                paperMessage.className = 'text-red-600 mt-2';
+            }
+        });
+    </script>
+</body>
+</html>
