@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Class Portal - Admin Dashboard</title>
+    <title>AUS LLM - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #e5e7eb;
+            background-color: #f0f4f8; /* Light blue-gray background */
         }
         /* Style for the editable table cells */
         .editable-cell {
@@ -38,11 +38,16 @@
                 </svg>
             </button>
             <!-- Desktop Navigation -->
-            <nav id="desktop-menu" class="hidden md:flex space-x-8">
+            <nav id="desktop-menu" class="hidden md:flex flex-wrap space-x-4 lg:space-x-8">
+                <a href="#manage-users" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Users</a>
+                <a href="#manage-teachers" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Teachers</a>
+                <a href="#manage-subjects" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Subjects</a>
+                <a href="#manage-exams" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Exams</a>
+                <a href="#manage-classes" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Classes</a>
                 <a href="#manage-news" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">News</a>
                 <a href="#manage-schedules" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Schedules</a>
                 <a href="#manage-papers" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Papers</a>
-                <a href="#manage-users" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Users</a>
+                <a href="#manage-results" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Results</a>
             </nav>
             <div class="flex items-center space-x-4">
                 <span id="adminName" class="font-bold hidden md:block"></span>
@@ -53,20 +58,26 @@
         </div>
         <!-- Mobile Navigation -->
         <nav id="mobile-menu" class="hidden md:hidden bg-blue-800 p-4 space-y-2">
+            <a href="#manage-users" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Users</a>
+            <a href="#manage-teachers" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Teachers</a>
+            <a href="#manage-subjects" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Subjects</a>
+            <a href="#manage-exams" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Exams</a>
+            <a href="#manage-classes" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Classes</a>
             <a href="#manage-news" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage News</a>
             <a href="#manage-schedules" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Schedules</a>
             <a href="#manage-papers" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Papers</a>
-            <a href="#manage-users" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Users</a>
+            <a href="#manage-results" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Results</a>
         </nav>
     </header>
 
     <!-- Main Content -->
     <main class="container mx-auto p-4 flex-grow">
         <h2 class="text-4xl font-extrabold text-center text-gray-900 my-8">
-            Manage Class Portal Content
+            Admin Dashboard
         </h2>
 
         <div class="space-y-12">
+            
             <!-- Manage Users Section -->
             <section id="manage-users" class="p-8 bg-white rounded-2xl shadow-xl">
                 <h3 class="text-3xl font-bold text-gray-800 mb-6">Registered Users</h3>
@@ -74,6 +85,94 @@
                     <!-- Users table will be dynamically loaded here -->
                 </div>
                 <div id="usersMessage" class="text-center text-sm mt-4"></div>
+            </section>
+            
+            <!-- Manage Teachers Section -->
+            <section id="manage-teachers" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Manage Teachers</h3>
+                <form id="addTeacherForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Assign Teacher</h4>
+                    <div>
+                        <label for="teacherId" class="block text-sm font-medium text-gray-700">Select User</label>
+                        <select id="teacherId" name="teacherId" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <!-- Users will be populated here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="teacherSubject" class="block text-sm font-medium text-gray-700">Assign Subject</label>
+                        <select id="teacherSubject" name="teacherSubject" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                             <!-- Subjects will be populated here -->
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Assign Teacher
+                    </button>
+                </form>
+                <div id="teachersMessage" class="text-center text-sm mt-4"></div>
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Assigned Teachers</h4>
+                <div id="teachers-list" class="overflow-x-auto">
+                    <!-- Assigned teachers will be loaded here -->
+                </div>
+            </section>
+            
+            <!-- Manage Subjects Section -->
+            <section id="manage-subjects" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Manage Subjects</h3>
+                <form id="addSubjectForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New Subject</h4>
+                    <div>
+                        <label for="subjectTitle" class="block text-sm font-medium text-gray-700">Subject Name</label>
+                        <input id="subjectTitle" name="subjectTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Add Subject
+                    </button>
+                </form>
+                <div id="subjectsMessage" class="text-center text-sm mt-4"></div>
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Available Subjects</h4>
+                <div id="subjects-list" class="overflow-x-auto">
+                    <!-- Subjects will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Manage Exams Section -->
+            <section id="manage-exams" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Manage Exams</h3>
+                <form id="addExamForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New Exam</h4>
+                    <div>
+                        <label for="examName" class="block text-sm font-medium text-gray-700">Exam Name</label>
+                        <input id="examName" name="examName" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Add Exam
+                    </button>
+                </form>
+                <div id="examsMessage" class="text-center text-sm mt-4"></div>
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Available Exams</h4>
+                <div id="exams-list" class="overflow-x-auto">
+                    <!-- Exams will be loaded here -->
+                </div>
+            </section>
+            
+            <!-- Manage Classes Section -->
+            <section id="manage-classes" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Manage Classes</h3>
+                <form id="addClassForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New Class</h4>
+                    <div>
+                        <label for="className" class="block text-sm font-medium text-gray-700">Class Name</label>
+                        <input id="className" name="className" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Add Class
+                    </button>
+                </form>
+                <div id="classesMessage" class="text-center text-sm mt-4"></div>
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Available Classes</h4>
+                <div id="classes-list" class="overflow-x-auto">
+                    <!-- Classes will be loaded here -->
+                </div>
             </section>
 
             <!-- Add News and Updates Section -->
@@ -172,6 +271,40 @@
                     <!-- Published papers will be dynamically loaded here -->
                 </div>
             </section>
+
+            <!-- Manage Results Section -->
+            <section id="manage-results" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Manage Results</h3>
+                <form id="addResultForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Enter Student Marks</h4>
+                    <div>
+                        <label for="studentId" class="block text-sm font-medium text-gray-700">Select Student</label>
+                        <select id="studentId" name="studentId" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <!-- Students will be populated here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="examId" class="block text-sm font-medium text-gray-700">Select Exam</label>
+                        <select id="examId" name="examId" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <!-- Exams will be populated here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="subjectId" class="block text-sm font-medium text-gray-700">Select Subject</label>
+                        <select id="subjectId" name="subjectId" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <!-- Subjects will be populated here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="marks" class="block text-sm font-medium text-gray-700">Marks Obtained</label>
+                        <input id="marks" name="marks" type="number" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Add Result
+                    </button>
+                </form>
+                <div id="resultsMessage" class="text-center text-sm mt-4"></div>
+            </section>
         </div>
 
         <!-- Confirmation Modal -->
@@ -225,6 +358,30 @@
 
         let itemToDelete = null;
 
+        // New elements for the new sections
+        const addTeacherForm = document.getElementById('addTeacherForm');
+        const addSubjectForm = document.getElementById('addSubjectForm');
+        const addExamForm = document.getElementById('addExamForm');
+        const addClassForm = document.getElementById('addClassForm');
+        const addResultForm = document.getElementById('addResultForm');
+
+        const teachersMessage = document.getElementById('teachersMessage');
+        const subjectsMessage = document.getElementById('subjectsMessage');
+        const examsMessage = document.getElementById('examsMessage');
+        const classesMessage = document.getElementById('classesMessage');
+        const resultsMessage = document.getElementById('resultsMessage');
+        
+        const teachersListDiv = document.getElementById('teachers-list');
+        const subjectsListDiv = document.getElementById('subjects-list');
+        const examsListDiv = document.getElementById('exams-list');
+        const classesListDiv = document.getElementById('classes-list');
+
+        const teacherIdSelect = document.getElementById('teacherId');
+        const teacherSubjectSelect = document.getElementById('teacherSubject');
+        const studentIdSelect = document.getElementById('studentId');
+        const examIdSelect = document.getElementById('examId');
+        const subjectIdSelect = document.getElementById('subjectId');
+
         // Toggle mobile menu visibility
         menuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
@@ -269,9 +426,21 @@
                     if (userDocSnap.exists() && userDocSnap.data().role === 'admin') {
                         adminNameSpan.textContent = userDocSnap.data().name || 'Admin';
                         fetchUsers();
+                        fetchTeachers();
+                        fetchSubjects();
+                        fetchExams();
+                        fetchClasses();
                         fetchNews();
                         fetchSchedules();
                         fetchPapers();
+                        
+                        // Populate select dropdowns
+                        populateUsersSelect();
+                        populateSubjectsSelect();
+                        populateStudentsSelect();
+                        populateExamsSelect();
+                        populateSubjectsSelectForResults();
+
                     } else {
                         await signOut(auth);
                         window.location.href = 'admin-login.html';
@@ -686,6 +855,408 @@
             }
         });
 
+        // --- New Functionality for managing teachers, subjects, exams, classes, and results ---
+
+        // Function to populate select dropdowns with users
+        const populateUsersSelect = async () => {
+            teacherIdSelect.innerHTML = '<option value="" disabled selected>Select a user</option>';
+            studentIdSelect.innerHTML = '<option value="" disabled selected>Select a student</option>';
+            try {
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${user.name} (${user.email})`;
+                    teacherIdSelect.appendChild(option);
+                    studentIdSelect.appendChild(option.cloneNode(true));
+                });
+            } catch (error) {
+                console.error("Error populating users select:", error);
+            }
+        };
+
+        // Function to populate select dropdowns with subjects
+        const populateSubjectsSelect = async () => {
+            teacherSubjectSelect.innerHTML = '<option value="" disabled selected>Select a subject</option>';
+            try {
+                const subjectsSnapshot = await getDocs(collection(db, 'subjects'));
+                subjectsSnapshot.forEach(doc => {
+                    const subject = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = subject.title;
+                    teacherSubjectSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error populating subjects select:", error);
+            }
+        };
+
+        // Function to populate subjects select for the results form
+        const populateSubjectsSelectForResults = async () => {
+             subjectIdSelect.innerHTML = '<option value="" disabled selected>Select a subject</option>';
+             try {
+                 const subjectsSnapshot = await getDocs(collection(db, 'subjects'));
+                 subjectsSnapshot.forEach(doc => {
+                     const subject = doc.data();
+                     const option = document.createElement('option');
+                     option.value = doc.id;
+                     option.textContent = subject.title;
+                     subjectIdSelect.appendChild(option);
+                 });
+             } catch (error) {
+                 console.error("Error populating subjects select:", error);
+             }
+        };
+
+        // Function to populate select dropdowns with students
+        const populateStudentsSelect = async () => {
+            studentIdSelect.innerHTML = '<option value="" disabled selected>Select a student</option>';
+            try {
+                const studentsQuery = query(collection(db, 'users'), where('role', '==', 'student'));
+                const studentsSnapshot = await getDocs(studentsQuery);
+                studentsSnapshot.forEach(doc => {
+                    const student = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${student.name} (${student.batch})`;
+                    studentIdSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error populating students select:", error);
+            }
+        };
+
+        // Function to populate select dropdowns with exams
+        const populateExamsSelect = async () => {
+            examIdSelect.innerHTML = '<option value="" disabled selected>Select an exam</option>';
+            try {
+                const examsSnapshot = await getDocs(collection(db, 'exams'));
+                examsSnapshot.forEach(doc => {
+                    const exam = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = exam.examName;
+                    examIdSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error populating exams select:", error);
+            }
+        };
+        
+        // Fetch and display teachers using onSnapshot for real-time updates
+        const fetchTeachers = () => {
+            teachersListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading teachers...</div>`;
+            const teachersCollectionRef = collection(db, 'teacherAssignments');
+            onSnapshot(teachersCollectionRef, async (snapshot) => {
+                let teachersHtml = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teacher Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
+                const fetchPromises = snapshot.docs.map(async (docRef) => {
+                    const assignment = docRef.data();
+                    const user = (await getDoc(doc(db, 'users', assignment.teacherId))).data();
+                    const subject = (await getDoc(doc(db, 'subjects', assignment.subjectId))).data();
+                    
+                    return `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user?.name || 'Unknown User'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${subject?.title || 'Unknown Subject'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                <button data-id="${docRef.id}" data-title="${user?.name || 'Teacher'}" class="delete-btn text-red-600 hover:text-red-900 font-bold transition duration-200">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                teachersHtml += (await Promise.all(fetchPromises)).join('');
+                teachersHtml += `</tbody></table>`;
+                teachersListDiv.innerHTML = teachersHtml;
+                
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('teacherAssignments', id, title);
+                    });
+                });
+            }, (error) => {
+                console.error("Error fetching teachers:", error);
+                teachersListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load teachers.</div>`;
+            });
+        };
+        
+        // Fetch and display subjects using onSnapshot for real-time updates
+        const fetchSubjects = () => {
+            subjectsListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading subjects...</div>`;
+            const subjectsCollectionRef = collection(db, 'subjects');
+            onSnapshot(subjectsCollectionRef, (snapshot) => {
+                let subjectsHtml = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
+                snapshot.forEach(docRef => {
+                    const subject = docRef.data();
+                    subjectsHtml += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${subject.title}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                <button data-id="${docRef.id}" data-title="${subject.title}" class="delete-btn text-red-600 hover:text-red-900 font-bold transition duration-200">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                subjectsHtml += `</tbody></table>`;
+                subjectsListDiv.innerHTML = subjectsHtml;
+                
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('subjects', id, title);
+                    });
+                });
+            }, (error) => {
+                console.error("Error fetching subjects:", error);
+                subjectsListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load subjects.</div>`;
+            });
+        };
+
+        // Fetch and display exams using onSnapshot for real-time updates
+        const fetchExams = () => {
+            examsListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading exams...</div>`;
+            const examsCollectionRef = collection(db, 'exams');
+            onSnapshot(examsCollectionRef, (snapshot) => {
+                let examsHtml = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exam Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
+                snapshot.forEach(docRef => {
+                    const exam = docRef.data();
+                    examsHtml += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${exam.examName}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                <button data-id="${docRef.id}" data-title="${exam.examName}" class="delete-btn text-red-600 hover:text-red-900 font-bold transition duration-200">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                examsHtml += `</tbody></table>`;
+                examsListDiv.innerHTML = examsHtml;
+                
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('exams', id, title);
+                    });
+                });
+            }, (error) => {
+                console.error("Error fetching exams:", error);
+                examsListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load exams.</div>`;
+            });
+        };
+
+        // Fetch and display classes using onSnapshot for real-time updates
+        const fetchClasses = () => {
+            classesListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading classes...</div>`;
+            const classesCollectionRef = collection(db, 'classes');
+            onSnapshot(classesCollectionRef, (snapshot) => {
+                let classesHtml = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
+                snapshot.forEach(docRef => {
+                    const classItem = docRef.data();
+                    classesHtml += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${classItem.className}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                <button data-id="${docRef.id}" data-title="${classItem.className}" class="delete-btn text-red-600 hover:text-red-900 font-bold transition duration-200">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                classesHtml += `</tbody></table>`;
+                classesListDiv.innerHTML = classesHtml;
+                
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('classes', id, title);
+                    });
+                });
+            }, (error) => {
+                console.error("Error fetching classes:", error);
+                classesListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load classes.</div>`;
+            });
+        };
+
+        // Add Teacher Assignment Form submission
+        addTeacherForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const teacherId = addTeacherForm.teacherId.value;
+            const subjectId = addTeacherForm.teacherSubject.value;
+            
+            if (!teacherId || !subjectId) {
+                teachersMessage.textContent = 'Please select both a user and a subject.';
+                teachersMessage.className = 'text-red-600 mt-2';
+                return;
+            }
+
+            try {
+                // First, update the user's role to 'teacher'
+                const userDocRef = doc(db, 'users', teacherId);
+                await updateDoc(userDocRef, { role: 'teacher' });
+
+                // Then, create the assignment
+                await addDoc(collection(db, 'teacherAssignments'), {
+                    teacherId,
+                    subjectId,
+                    date: new Date().toISOString()
+                });
+                teachersMessage.textContent = 'Teacher assigned successfully!';
+                teachersMessage.className = 'text-green-600 mt-2';
+                addTeacherForm.reset();
+            } catch (error) {
+                console.error("Error assigning teacher:", error);
+                teachersMessage.textContent = `Failed to assign teacher: ${error.message}`;
+                teachersMessage.className = 'text-red-600 mt-2';
+            }
+        });
+        
+        // Add Subject Form submission
+        addSubjectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = addSubjectForm.subjectTitle.value;
+            try {
+                await addDoc(collection(db, 'subjects'), { title });
+                subjectsMessage.textContent = 'Subject added successfully!';
+                subjectsMessage.className = 'text-green-600 mt-2';
+                addSubjectForm.reset();
+            } catch (error) {
+                console.error("Error adding subject:", error);
+                subjectsMessage.textContent = `Failed to add subject: ${error.message}`;
+                subjectsMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Add Exam Form submission
+        addExamForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const examName = addExamForm.examName.value;
+            try {
+                await addDoc(collection(db, 'exams'), { examName });
+                examsMessage.textContent = 'Exam added successfully!';
+                examsMessage.className = 'text-green-600 mt-2';
+                addExamForm.reset();
+            } catch (error) {
+                console.error("Error adding exam:", error);
+                examsMessage.textContent = `Failed to add exam: ${error.message}`;
+                examsMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Add Class Form submission
+        addClassForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const className = addClassForm.className.value;
+            try {
+                await addDoc(collection(db, 'classes'), { className });
+                classesMessage.textContent = 'Class added successfully!';
+                classesMessage.className = 'text-green-600 mt-2';
+                addClassForm.reset();
+            } catch (error) {
+                console.error("Error adding class:", error);
+                classesMessage.textContent = `Failed to add class: ${error.message}`;
+                classesMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Add Result Form submission
+        addResultForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const studentId = addResultForm.studentId.value;
+            const examId = addResultForm.examId.value;
+            const subjectId = addResultForm.subjectId.value;
+            const marks = addResultForm.marks.value;
+            
+            if (!studentId || !examId || !subjectId || !marks) {
+                resultsMessage.textContent = 'Please fill out all fields.';
+                resultsMessage.className = 'text-red-600 mt-2';
+                return;
+            }
+
+            try {
+                // Check if a result already exists for this student, exam, and subject
+                const resultQuery = await getDocs(
+                    query(
+                        collection(db, 'results'),
+                        where('studentId', '==', studentId),
+                        where('examId', '==', examId),
+                        where('subjectId', '==', subjectId)
+                    )
+                );
+
+                if (!resultQuery.empty) {
+                    const resultDoc = resultQuery.docs[0];
+                    const docRef = doc(db, 'results', resultDoc.id);
+                    await updateDoc(docRef, { marks: parseInt(marks) });
+                    resultsMessage.textContent = 'Result updated successfully!';
+                } else {
+                    await addDoc(collection(db, 'results'), {
+                        studentId,
+                        examId,
+                        subjectId,
+                        marks: parseInt(marks),
+                        date: new Date().toISOString()
+                    });
+                    resultsMessage.textContent = 'Result added successfully!';
+                }
+                
+                resultsMessage.className = 'text-green-600 mt-2';
+                addResultForm.reset();
+            } catch (error) {
+                console.error("Error adding/updating result:", error);
+                resultsMessage.textContent = `Failed to add/update result: ${error.message}`;
+                resultsMessage.className = 'text-red-600 mt-2';
+            }
+        });
     </script>
 </body>
 </html>
