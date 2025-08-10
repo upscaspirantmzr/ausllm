@@ -57,6 +57,7 @@
                 <button id="news-tab" class="tab-button flex-1 py-4 text-center text-lg text-gray-600 hover:text-blue-500 transition duration-300">News</button>
                 <button id="schedule-tab" class="tab-button flex-1 py-4 text-center text-lg text-gray-600 hover:text-blue-500 transition duration-300">Schedules</button>
                 <button id="assignments-tab" class="tab-button flex-1 py-4 text-center text-lg text-gray-600 hover:text-blue-500 transition duration-300">Assignments</button>
+                <button id="approval-tab" class="tab-button flex-1 py-4 text-center text-lg text-gray-600 hover:text-blue-500 transition duration-300">Student Approval</button>
             </div>
         </div>
 
@@ -105,25 +106,6 @@
             </div>
         </div>
 
-        <div id="schedule-content" class="tab-content bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Add New Schedule Event</h2>
-            <form id="addScheduleForm" class="space-y-4">
-                <input type="text" name="scheduleTitle" placeholder="Event Title" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="date" name="scheduleDate" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <textarea name="scheduleDescription" placeholder="Event Description" rows="3" required
-                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">Add Schedule</button>
-            </form>
-            <p id="scheduleMessage" class="mt-4"></p>
-            <div class="mt-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Upcoming Events</h3>
-                <div id="scheduleList" class="space-y-4">
-                    <!-- Schedule events will be dynamically loaded here -->
-                </div>
-            </div>
-        </div>
 
         <div id="assignments-content" class="tab-content bg-white rounded-xl shadow-lg p-6 mb-6">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">Manage Assignments</h2>
@@ -202,6 +184,25 @@
                 </div>
             </div>
         </div>
+
+        <div id="approval-content" class="tab-content bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Pending Student Approvals</h2>
+            <p id="approvalMessage" class="mt-4"></p>
+            <div class="mt-8 overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg shadow">
+                    <thead>
+                        <tr class="w-full bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Name</th>
+                            <th class="py-3 px-6 text-left">Email</th>
+                            <th class="py-3 px-6 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingUsersList" class="text-gray-600 text-sm font-light">
+                        <!-- Pending users will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
     <script type="module">
@@ -250,6 +251,10 @@
         const assignmentsList = document.getElementById('assignmentsList');
         const assignmentMessage = document.getElementById('assignmentMessage');
 
+        // User Approval UI elements
+        const pendingUsersList = document.getElementById('pendingUsersList');
+        const approvalMessage = document.getElementById('approvalMessage');
+
         // Initial Authentication
         let userId = null;
         let dbInstance = null;
@@ -273,6 +278,7 @@
                         setupNewsListener();
                         setupScheduleListener();
                         setupAssignmentsListeners();
+                        setupApprovalListener(); // New listener for user approval
                     } else {
                         window.location.href = 'dashboard.html';
                     }
@@ -362,7 +368,6 @@
                         const docId = e.target.dataset.id;
                         try {
                             // TODO: Replace with a custom modal for confirmation
-                            console.log('Deleting question paper with ID:', docId);
                             await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'papers', docId));
                             paperMessage.textContent = 'Question paper deleted successfully!';
                             paperMessage.className = 'text-green-600 mt-2';
@@ -449,7 +454,6 @@
                         const docId = e.target.dataset.id;
                         try {
                             // TODO: Replace with a custom modal for confirmation
-                            console.log('Deleting news item with ID:', docId);
                             await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'news', docId));
                             newsMessage.textContent = 'News item deleted successfully!';
                             newsMessage.className = 'text-green-600 mt-2';
@@ -537,7 +541,6 @@
                         const docId = e.target.dataset.id;
                         try {
                             // TODO: Replace with a custom modal for confirmation
-                            console.log('Deleting schedule event with ID:', docId);
                             await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'schedules', docId));
                             scheduleMessage.textContent = 'Schedule event deleted successfully!';
                             scheduleMessage.className = 'text-green-600 mt-2';
@@ -627,7 +630,6 @@
             // Display current assignments
             onSnapshot(assignmentsCollectionRef, async (snapshot) => {
                 assignmentsList.innerHTML = '';
-                // The fix: Using getDocs() to fetch all documents from collections
                 const teachersSnapshot = await getDocs(teachersCollectionRef);
                 const classesSnapshot = await getDocs(classesCollectionRef);
                 const subjectsSnapshot = await getDocs(subjectsCollectionRef);
@@ -667,7 +669,6 @@
                         const docId = e.target.dataset.id;
                         try {
                             // TODO: Replace with a custom modal for confirmation
-                            console.log('Unassigning teacher with ID:', docId);
                             await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'assignments', docId));
                             assignmentMessage.textContent = 'Assignment removed successfully!';
                             assignmentMessage.className = 'text-green-600 mt-2';
@@ -738,6 +739,87 @@
                 assignmentMessage.className = 'text-red-600 mt-2';
             }
         });
+
+        // --- User Approval Management ---
+        const pendingUsersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'pendingStudents');
+        const usersCollectionRef = collection(db, 'artifacts', appId, 'users', userId, 'userData');
+
+        const setupApprovalListener = () => {
+            onSnapshot(pendingUsersCollectionRef, (snapshot) => {
+                pendingUsersList.innerHTML = '';
+                if (snapshot.empty) {
+                    approvalMessage.textContent = 'No pending students to approve.';
+                    approvalMessage.className = 'text-gray-500 mt-2';
+                } else {
+                    approvalMessage.textContent = '';
+                }
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const row = document.createElement('tr');
+                    row.classList.add('border-b', 'border-gray-200', 'hover:bg-gray-100');
+                    row.innerHTML = `
+                        <td class="py-3 px-6 text-left whitespace-nowrap">
+                            <span class="font-medium">${data.name}</span>
+                        </td>
+                        <td class="py-3 px-6 text-left">
+                            <span class="font-light">${data.email}</span>
+                        </td>
+                        <td class="py-3 px-6 text-center">
+                            <div class="flex item-center justify-center space-x-2">
+                                <button data-id="${doc.id}" data-name="${data.name}" data-email="${data.email}" class="approve-btn bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded text-xs transition duration-300">
+                                    Approve
+                                </button>
+                                <button data-id="${doc.id}" class="reject-btn bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-xs transition duration-300">
+                                    Reject
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    pendingUsersList.appendChild(row);
+                });
+
+                // Attach event listeners to the new buttons
+                document.querySelectorAll('.approve-btn').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const { id, name, email } = e.target.dataset;
+                        try {
+                            const newUserData = {
+                                name: name,
+                                email: email,
+                                isAdmin: false,
+                                isApproved: true
+                            };
+                            // Move the user data to the 'users' collection
+                            await setDoc(doc(db, 'artifacts', appId, 'users', id, 'userData', id), newUserData);
+                            // Delete the user from the pending collection
+                            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pendingStudents', id));
+                            approvalMessage.textContent = `${name} has been approved.`;
+                            approvalMessage.className = 'text-green-600 mt-2';
+                        } catch (error) {
+                            console.error("Error approving user:", error);
+                            approvalMessage.textContent = `Failed to approve user: ${error.message}`;
+                            approvalMessage.className = 'text-red-600 mt-2';
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.reject-btn').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const { id } = e.target.dataset;
+                        try {
+                            // Delete the user from the pending collection
+                            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pendingStudents', id));
+                            approvalMessage.textContent = 'User request rejected.';
+                            approvalMessage.className = 'text-red-600 mt-2';
+                        } catch (error) {
+                            console.error("Error rejecting user:", error);
+                            approvalMessage.textContent = `Failed to reject user: ${error.message}`;
+                            approvalMessage.className = 'text-red-600 mt-2';
+                        }
+                    });
+                });
+            });
+        };
     </script>
 </body>
 </html>
