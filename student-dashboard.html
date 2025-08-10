@@ -3,93 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
+    <title>Class Portal - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9;
+            background-color: #f0f4f8; /* Light blue-gray background */
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <nav class="bg-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-bold text-gray-800">Student Dashboard</h1>
-        <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Logout</button>
-    </nav>
-    <div class="container mx-auto p-6 space-y-8">
-        <div id="student-content" class="hidden">
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-semibold mb-4">Your Results</h2>
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exam</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marks</th>
-                        </tr>
-                    </thead>
-                    <tbody id="resultsTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Result rows will be injected here -->
-                    </tbody>
-                </table>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-indigo-600">Class Portal</h1>
+            <div class="flex items-center space-x-4">
+                <span id="userName" class="font-medium text-gray-700"></span>
+                <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                    Logout
+                </button>
             </div>
         </div>
-    </div>
-    
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 flex-grow">
+        <h2 id="welcomeMessage" class="text-4xl font-extrabold text-center text-gray-900 mt-8 mb-12">
+            Welcome!
+        </h2>
+        
+        <!-- Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- News Card -->
+            <a href="news.html" class="p-8 bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-2 group">
+                <div class="flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600 mb-6 group-hover:bg-blue-200 transition-colors">
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.47-9.544a8.5 8.5 0 010 12.02m-4.94-7.072a2.5 2.5 0 010 3.536M12 21h4a2 2 0 002-2v-4a2 2 0 00-2-2h-4a2 2 0 00-2 2v4a2 2 0 002 2zM3 10a2 2 0 012-2h4a2 2 0 012 2v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4z"></path></svg>
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">Latest News & Updates</h3>
+                <p class="mt-3 text-gray-600">Stay up-to-date with important announcements and campus news.</p>
+            </a>
+
+            <!-- Schedule Card -->
+            <a href="schedule.html" class="p-8 bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-2 group">
+                <div class="flex items-center justify-center h-16 w-16 rounded-full bg-green-100 text-green-600 mb-6 group-hover:bg-green-200 transition-colors">
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">Class & Exam Schedules</h3>
+                <p class="mt-3 text-gray-600">View your academic calendar, class timings, and exam dates.</p>
+            </a>
+            
+            <!-- Results Card -->
+            <a href="results.html" class="p-8 bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-2 group">
+                <div class="flex items-center justify-center h-16 w-16 rounded-full bg-purple-100 text-purple-600 mb-6 group-hover:bg-purple-200 transition-colors">
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M10 12l-1 1-1-1"></path></svg>
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">View My Results</h3>
+                <p class="mt-3 text-gray-600">Access your grades and performance reports for all exams.</p>
+            </a>
+
+            <!-- Question Papers Card -->
+            <a href="papers.html" class="p-8 bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-2 group">
+                <div class="flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 text-yellow-600 mb-6 group-hover:bg-yellow-200 transition-colors">
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m-5 4h4a2 2 0 002-2V6a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">Previous Year Q Papers</h3>
+                <p class="mt-3 text-gray-600">Access a repository of previous year's question papers.</p>
+            </a>
+
+            <!-- Other Features Card -->
+            <a href="#" class="p-8 bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:-translate-y-2 group">
+                <div class="flex items-center justify-center h-16 w-16 rounded-full bg-gray-100 text-gray-600 mb-6 group-hover:bg-gray-200 transition-colors">
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">Other Features</h3>
+                <p class="mt-3 text-gray-600">Explore additional tools and resources for your batch.</p>
+            </a>
+
+        </div>
+    </main>
+
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { collection, onSnapshot, query, where, doc, getDocs } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
+        const userNameSpan = document.getElementById('userName');
+        const welcomeMessageHeader = document.getElementById('welcomeMessage');
         const logoutBtn = document.getElementById('logoutBtn');
-        const studentContent = document.getElementById('student-content');
-        const resultsTableBody = document.getElementById('resultsTableBody');
 
-        // Check user authentication state and role
+        // Check user authentication status
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userDoc = await getDocs(query(collection(db, 'users'), where('email', '==', user.email)));
-                if (!userDoc.empty && userDoc.docs[0].data().role === 'student') {
-                    studentContent.classList.remove('hidden');
-                    loadStudentResults(user.uid);
+                // User is signed in, fetch their details from Firestore
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    const name = userData.name || 'User';
+                    const batch = userData.batch || 'your batch';
+                    userNameSpan.textContent = name;
+                    welcomeMessageHeader.textContent = `Welcome, ${name}! Your Batch: ${batch}`;
                 } else {
-                    window.location.href = 'login.html';
+                    // User data not found, display a generic message
+                    userNameSpan.textContent = 'User';
+                    welcomeMessageHeader.textContent = 'Welcome to the Class Portal!';
                 }
             } else {
-                window.location.href = 'login.html';
+                // User is signed out, redirect to the login page
+                window.location.href = 'index.html';
             }
         });
 
+        // Add event listener for the logout button
         logoutBtn.addEventListener('click', async () => {
-            await signOut(auth);
-            window.location.href = 'login.html';
+            try {
+                await signOut(auth);
+                // The onAuthStateChanged listener will handle the redirection after sign-out
+            } catch (error) {
+                console.error("Error signing out:", error);
+                // Optional: display an error message
+                alert("An error occurred during logout. Please try again.");
+            }
         });
-
-        const loadStudentResults = (studentId) => {
-            const resultsQuery = query(collection(db, 'results'), where('studentId', '==', studentId));
-            onSnapshot(resultsQuery, async (snapshot) => {
-                resultsTableBody.innerHTML = '';
-                for (const resultDoc of snapshot.docs) {
-                    const resultData = resultDoc.data();
-                    
-                    // Fetch exam and subject names for display
-                    const examDoc = await getDocs(query(collection(db, 'exams'), where('__name__', '==', resultData.examId)));
-                    const subjectDoc = await getDocs(query(collection(db, 'subjects'), where('__name__', '==', resultData.subjectId)));
-                    
-                    const examName = examDoc.empty ? 'Unknown Exam' : examDoc.docs[0].data().examName;
-                    const subjectName = subjectDoc.empty ? 'Unknown Subject' : subjectDoc.docs[0].data().title;
-                    
-                    resultsTableBody.innerHTML += `
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${examName}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${subjectName}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${resultData.marks}</td>
-                        </tr>
-                    `;
-                }
-            });
-        };
     </script>
 </body>
 </html>
