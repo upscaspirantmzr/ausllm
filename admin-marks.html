@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold text-gray-800">Admin Dashboard</h1>
+        <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Logout</button>
+    </nav>
+    <div class="container mx-auto p-6 space-y-8">
+        <!-- Admin-only functionality -->
+        <div id="admin-content" class="space-y-8 hidden">
+            <!-- Add Subject Form -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">Add New Subject</h2>
+                <form id="addSubjectForm" class="space-y-4">
+                    <input type="text" id="subjectTitle" placeholder="Subject Title" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Add Subject</button>
+                </form>
+            </div>
+
+            <!-- Add Class Form -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">Add New Class</h2>
+                <form id="addClassForm" class="space-y-4">
+                    <input type="text" id="className" placeholder="Class Name (e.g., AUS LLM 2025-27)" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Add Class</button>
+                </form>
+            </div>
+
+            <!-- Add Exam Form -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">Add New Exam</h2>
+                <form id="addExamForm" class="space-y-4">
+                    <input type="text" id="examName" placeholder="Exam Name (e.g., Mid-Term)" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Add Exam</button>
+                </form>
+            </div>
+
+            <!-- Assign Teacher Form -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">Assign Teacher to Class & Subject</h2>
+                <form id="assignTeacherForm" class="space-y-4">
+                    <select id="teacherSelect" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Teacher</option>
+                    </select>
+                    <select id="classSelect" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Class</option>
+                    </select>
+                    <select id="subjectSelect" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Subject</option>
+                    </select>
+                    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">Assign Teacher</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { collection, addDoc, onSnapshot, query, where, getDocs, doc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        const adminContent = document.getElementById('admin-content');
+        const addSubjectForm = document.getElementById('addSubjectForm');
+        const addClassForm = document.getElementById('addClassForm');
+        const addExamForm = document.getElementById('addExamForm');
+        const assignTeacherForm = document.getElementById('assignTeacherForm');
+        const teacherSelect = document.getElementById('teacherSelect');
+        const classSelect = document.getElementById('classSelect');
+        const subjectSelect = document.getElementById('subjectSelect');
+
+        // Check user authentication state and role
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDoc = await getDocs(query(collection(db, 'users'), where('email', '==', user.email)));
+                if (!userDoc.empty && userDoc.docs[0].data().role === 'admin') {
+                    adminContent.classList.remove('hidden');
+                    loadAssignmentDropdowns();
+                } else {
+                    window.location.href = 'login.html'; // Redirect non-admins
+                }
+            } else {
+                window.location.href = 'login.html'; // Redirect if not logged in
+            }
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.href = 'login.html';
+        });
+
+        // Load dropdowns for teacher assignment
+        const loadAssignmentDropdowns = () => {
+            // Fetch Teachers
+            onSnapshot(query(collection(db, 'users'), where('role', '==', 'teacher')), (snapshot) => {
+                teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
+                snapshot.forEach(doc => {
+                    const teacher = doc.data();
+                    teacherSelect.innerHTML += `<option value="${doc.id}">${teacher.name} (${teacher.email})</option>`;
+                });
+            });
+
+            // Fetch Classes
+            onSnapshot(collection(db, 'classes'), (snapshot) => {
+                classSelect.innerHTML = '<option value="">Select Class</option>';
+                snapshot.forEach(doc => {
+                    const classData = doc.data();
+                    classSelect.innerHTML += `<option value="${doc.id}">${classData.className}</option>`;
+                });
+            });
+
+            // Fetch Subjects
+            onSnapshot(collection(db, 'subjects'), (snapshot) => {
+                subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+                snapshot.forEach(doc => {
+                    const subjectData = doc.data();
+                    subjectSelect.innerHTML += `<option value="${doc.id}">${subjectData.title}</option>`;
+                });
+            });
+        };
+
+        // Form Submission Handlers
+        addSubjectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = addSubjectForm.subjectTitle.value;
+            await addDoc(collection(db, 'subjects'), { title });
+            addSubjectForm.reset();
+        });
+
+        addClassForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const className = addClassForm.className.value;
+            await addDoc(collection(db, 'classes'), { className });
+            addClassForm.reset();
+        });
+
+        addExamForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const examName = addExamForm.examName.value;
+            await addDoc(collection(db, 'exams'), { examName });
+            addExamForm.reset();
+        });
+
+        assignTeacherForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const teacherId = assignTeacherForm.teacherSelect.value;
+            const classId = assignTeacherForm.classSelect.value;
+            const subjectId = assignTeacherForm.subjectSelect.value;
+            await addDoc(collection(db, 'teacherAssignments'), { teacherId, classId, subjectId });
+            assignTeacherForm.reset();
+        });
+    </script>
+</body>
+</html>
