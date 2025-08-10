@@ -23,15 +23,6 @@
             border-color: #3b82f6;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
         }
-        .tab-button.active {
-            border-b-4 border-blue-500 text-blue-500 font-semibold;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -40,343 +31,632 @@
     <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto flex items-center justify-between p-4">
             <h1 class="text-3xl font-extrabold">Admin Panel</h1>
+            <!-- Hamburger Menu Button (for mobile) -->
+            <button id="menu-btn" class="md:hidden text-white focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <!-- Desktop Navigation -->
+            <nav id="desktop-menu" class="hidden md:flex space-x-8">
+                <a href="#manage-news" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">News</a>
+                <a href="#manage-schedules" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Schedules</a>
+                <a href="#manage-papers" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Papers</a>
+                <a href="#manage-users" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Users</a>
+            </nav>
             <div class="flex items-center space-x-4">
-                <span id="userName" class="font-medium text-blue-200"></span>
-                <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                <span id="adminName" class="font-bold hidden md:block"></span>
+                <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
                     Logout
                 </button>
             </div>
         </div>
+        <!-- Mobile Navigation -->
+        <nav id="mobile-menu" class="hidden md:hidden bg-blue-800 p-4 space-y-2">
+            <a href="#manage-news" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage News</a>
+            <a href="#manage-schedules" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Schedules</a>
+            <a href="#manage-papers" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Papers</a>
+            <a href="#manage-users" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Users</a>
+        </nav>
     </header>
 
-    <main class="container mx-auto p-6 flex-grow">
-        <!-- Tab Navigation -->
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <div class="flex border-b border-gray-200">
-                <button id="papers-tab" class="tab-button active flex-1 py-4 text-center text-lg text-gray-600 hover:text-blue-500 transition duration-300">Question Papers</button>
-                <button id="news-tab" class="tab-button flex-1 py-4 text-center text-lg text-gray-600 hover:text-blue-500 transition duration-300">News</button>
-                <button id="schedule-tab" class="tab-button flex-1 py-4 text-center text-lg text-gray-600 hover:text-blue-500 transition duration-300">Schedules</button>
-                <button id="assignments-tab" class="tab-button flex-1 py-4 text-center text-lg text-gray-600 hover:text-blue-500 transition duration-300">Assignments</button>
-            </div>
-        </div>
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 flex-grow">
+        <h2 class="text-4xl font-extrabold text-center text-gray-900 my-8">
+            Manage Class Portal Content
+        </h2>
 
-        <!-- Tab Content Containers -->
-        <div id="papers-content" class="tab-content active bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Manage Question Papers</h2>
-            <form id="addPaperForm" class="space-y-4">
-                <input type="text" name="paperTitle" placeholder="Paper Title (e.g., Mid-Term 2024)" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="url" name="paperUrl" placeholder="Link to PDF or Document" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">Upload Paper</button>
-            </form>
-            <p id="paperMessage" class="mt-4"></p>
-            <div class="mt-8 overflow-x-auto">
-                <table class="min-w-full bg-white rounded-lg shadow">
-                    <thead>
-                        <tr class="w-full bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                            <th class="py-3 px-6 text-left">Title</th>
-                            <th class="py-3 px-6 text-left">URL</th>
-                            <th class="py-3 px-6 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="papersList" class="text-gray-600 text-sm font-light">
-                        <!-- Papers will be dynamically loaded here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="news-content" class="tab-content bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Add New News Item</h2>
-            <form id="addNewsForm" class="space-y-4">
-                <input type="text" name="newsTitle" placeholder="News Title" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <textarea name="newsContent" placeholder="News Content" rows="5" required
-                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">Add News</button>
-            </form>
-            <p id="newsMessage" class="mt-4"></p>
-            <div class="mt-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Current News Items</h3>
-                <div id="newsList" class="space-y-4">
-                    <!-- News items will be dynamically loaded here -->
+        <div class="space-y-12">
+            <!-- Manage Users Section -->
+            <section id="manage-users" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Registered Users</h3>
+                <div id="users-list" class="overflow-x-auto">
+                    <!-- Users table will be dynamically loaded here -->
                 </div>
-            </div>
-        </div>
+                <div id="usersMessage" class="text-center text-sm mt-4"></div>
+            </section>
 
-        <div id="schedule-content" class="tab-content bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Add New Schedule Event</h2>
-            <form id="addScheduleForm" class="space-y-4">
-                <input type="text" name="scheduleTitle" placeholder="Event Title" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <input type="date" name="scheduleDate" required
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <textarea name="scheduleDescription" placeholder="Event Description" rows="3" required
-                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">Add Schedule</button>
-            </form>
-            <p id="scheduleMessage" class="mt-4"></p>
-            <div class="mt-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Upcoming Events</h3>
-                <div id="scheduleList" class="space-y-4">
-                    <!-- Schedule events will be dynamically loaded here -->
-                </div>
-            </div>
-        </div>
-
-        <div id="assignments-content" class="tab-content bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Manage Assignments</h2>
-
-            <!-- Add New Teacher, Class, Subject -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold mb-2">Add Teacher</h3>
-                    <form id="addTeacherForm" class="space-y-2">
-                        <input type="text" name="teacherName" placeholder="Teacher Name" required class="w-full px-4 py-2 border rounded-lg">
-                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg">Add Teacher</button>
-                    </form>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold mb-2">Add Class</h3>
-                    <form id="addClassForm" class="space-y-2">
-                        <input type="text" name="className" placeholder="Class Name (e.g., Batch 2024)" required class="w-full px-4 py-2 border rounded-lg">
-                        <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg">Add Class</button>
-                    </form>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold mb-2">Add Subject</h3>
-                    <form id="addSubjectForm" class="space-y-2">
-                        <input type="text" name="subjectName" placeholder="Subject Name (e.g., Physics)" required class="w-full px-4 py-2 border rounded-lg">
-                        <button type="submit" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 rounded-lg">Add Subject</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Assign Teacher to Class/Subject -->
-            <div class="bg-gray-100 p-6 rounded-lg mb-8">
-                <h3 class="text-xl font-bold mb-4">Assign Teacher to a Class and Subject</h3>
-                <form id="assignTeacherForm" class="space-y-4">
+            <!-- Add News and Updates Section -->
+            <section id="manage-news" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">News & Updates</h3>
+                <form id="addNewsForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New News/Update</h4>
                     <div>
-                        <label for="teacher-select" class="block text-sm font-medium text-gray-700">Select Teacher</label>
-                        <select id="teacher-select" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                            <option value="">-- Select a Teacher --</option>
-                            <!-- Teachers will be loaded here -->
-                        </select>
+                        <label for="newsTitle" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input id="newsTitle" name="newsTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
-                        <label for="class-select" class="block text-sm font-medium text-gray-700">Select Class</label>
-                        <select id="class-select" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                            <option value="">-- Select a Class --</option>
-                            <!-- Classes will be loaded here -->
-                        </select>
+                        <label for="newsContent" class="block text-sm font-medium text-gray-700">Content</label>
+                        <textarea id="newsContent" name="newsContent" rows="4" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
                     </div>
-                    <div>
-                        <label for="subject-select" class="block text-sm font-medium text-gray-700">Select Subject</label>
-                        <select id="subject-select" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                            <option value="">-- Select a Subject --</option>
-                            <!-- Subjects will be loaded here -->
-                        </select>
-                    </div>
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">Assign Teacher</button>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Publish News
+                    </button>
                 </form>
-                <p id="assignmentMessage" class="mt-4"></p>
-            </div>
+                <div id="newsMessage" class="text-center text-sm mt-4"></div>
+                
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Published News</h4>
+                <div id="published-news-list" class="space-y-4">
+                    <!-- Published news will be dynamically loaded here -->
+                </div>
+            </section>
 
-            <div class="mt-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Current Assignments</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white rounded-lg shadow">
-                        <thead>
-                            <tr class="w-full bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                                <th class="py-3 px-6 text-left">Teacher</th>
-                                <th class="py-3 px-6 text-left">Class</th>
-                                <th class="py-3 px-6 text-left">Subject</th>
-                                <th class="py-3 px-6 text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="assignmentsList" class="text-gray-600 text-sm font-light">
-                            <!-- Assignments will be loaded here -->
-                        </tbody>
-                    </table>
+            <!-- Add Schedules Section -->
+            <section id="manage-schedules" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Class/Exam Schedules</h3>
+                <form id="addScheduleForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New Schedule</h4>
+                    <div>
+                        <label for="scheduleTitle" class="block text-sm font-medium text-gray-700">Schedule Title (e.g., "Mid-term Exam Schedule")</label>
+                        <input id="scheduleTitle" name="scheduleTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div id="schedule-table-container" class="overflow-x-auto border border-gray-200 rounded-lg">
+                        <table id="schedule-table" class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="schedule-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Initial row for input -->
+                                <tr>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell rounded-md"></td>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell rounded-md"></td>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell rounded-md"></td>
+                                    <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="button" id="add-row-btn" class="flex-grow flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                            Add Row
+                        </button>
+                        <button type="submit" class="flex-grow flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                            Publish Schedule
+                        </button>
+                    </div>
+                </form>
+                <div id="scheduleMessage" class="text-center text-sm mt-4"></div>
+
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Published Schedules</h4>
+                <div id="published-schedules-list" class="space-y-4">
+                    <!-- Published schedules will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- Upload Previous Year Q Papers Section -->
+            <section id="manage-papers" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Question Papers</h3>
+                <form id="addPaperForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Upload New Question Paper</h4>
+                    <div>
+                        <label for="paperTitle" class="block text-sm font-medium text-gray-700">Title (e.g., "Engineering Physics - 2023")</label>
+                        <input id="paperTitle" name="paperTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="paperUrl" class="block text-sm font-medium text-gray-700">Paper URL (e.g., Google Drive link)</label>
+                        <input id="paperUrl" name="paperUrl" type="url" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Upload Paper
+                    </button>
+                </form>
+                <div id="paperMessage" class="text-center text-sm mt-4"></div>
+
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Published Question Papers</h4>
+                <div id="published-papers-list" class="space-y-4">
+                    <!-- Published papers will be dynamically loaded here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Are you sure?</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500" id="modal-text">
+                            Do you really want to delete this item? This action cannot be undone.
+                        </p>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Delete
+                        </button>
+                        <button id="cancel-delete-btn" class="mt-3 px-4 py-2 bg-gray-200 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-300 focus:outline-none">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
-
     <script type="module">
-        // Import Firebase libraries
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { doc, getDoc, addDoc, collection, getDocs, updateDoc, onSnapshot, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-        // IMPORTANT: Use the provided global variables for Firebase configuration and authentication
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : '';
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        // UI elements
+        const adminNameSpan = document.getElementById('adminName');
         const logoutBtn = document.getElementById('logoutBtn');
-        const userNameSpan = document.getElementById('userName');
-
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        const addPaperForm = document.getElementById('addPaperForm');
-        const papersList = document.getElementById('papersList');
-        const paperMessage = document.getElementById('paperMessage');
-
         const addNewsForm = document.getElementById('addNewsForm');
-        const newsList = document.getElementById('newsList');
-        const newsMessage = document.getElementById('newsMessage');
-
         const addScheduleForm = document.getElementById('addScheduleForm');
-        const scheduleList = document.getElementById('scheduleList');
+        const addPaperForm = document.getElementById('addPaperForm');
+        const newsMessage = document.getElementById('newsMessage');
         const scheduleMessage = document.getElementById('scheduleMessage');
+        const paperMessage = document.getElementById('paperMessage');
+        const usersListDiv = document.getElementById('users-list');
+        const usersMessageDiv = document.getElementById('usersMessage');
+        const publishedNewsList = document.getElementById('published-news-list');
+        const publishedSchedulesList = document.getElementById('published-schedules-list');
+        const publishedPapersList = document.getElementById('published-papers-list');
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const addRowBtn = document.getElementById('add-row-btn');
+        const scheduleBody = document.getElementById('schedule-body');
 
-        // Assignment UI elements
-        const addTeacherForm = document.getElementById('addTeacherForm');
-        const addClassForm = document.getElementById('addClassForm');
-        const addSubjectForm = document.getElementById('addSubjectForm');
-        const assignTeacherForm = document.getElementById('assignTeacherForm');
-        const teacherSelect = document.getElementById('teacher-select');
-        const classSelect = document.getElementById('class-select');
-        const subjectSelect = document.getElementById('subject-select');
-        const assignmentsList = document.getElementById('assignmentsList');
-        const assignmentMessage = document.getElementById('assignmentMessage');
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
 
-        // Initial Authentication
-        let userId = null;
-        let dbInstance = null;
+        let itemToDelete = null;
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                userId = user.uid;
-                dbInstance = db;
-                
-                const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'userData', userId);
-                const userDocSnap = await getDoc(userDocRef);
+        // Toggle mobile menu visibility
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
 
-                if (userDocSnap.exists()) {
-                    const userData = userDocSnap.data();
-                    
-                    if (userData.isAdmin) {
-                        const name = userData.name || 'Admin';
-                        userNameSpan.textContent = name;
-                        
-                        setupPapersListener();
-                        setupNewsListener();
-                        setupScheduleListener();
-                        setupAssignmentsListeners();
-                    } else {
-                        window.location.href = 'dashboard.html';
-                    }
-                } else {
-                    window.location.href = 'index.html';
-                }
-            } else {
-                window.location.href = 'index.html';
+        // Close mobile menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Add a new row to the schedule table
+        const addScheduleRow = () => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell rounded-md"></td>
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell rounded-md"></td>
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell rounded-md"></td>
+                <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+            `;
+            scheduleBody.appendChild(newRow);
+        };
+
+        // Event listener for the "Add Row" button
+        addRowBtn.addEventListener('click', addScheduleRow);
+
+        // Event listener for dynamically added remove buttons (delegated)
+        scheduleBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-row-btn')) {
+                e.target.closest('tr').remove();
             }
         });
-        
-        if (initialAuthToken) {
-            try {
-                await signInWithCustomToken(auth, initialAuthToken);
-            } catch (error) {
-                console.error("Error signing in with custom token:", error);
-                await signInAnonymously(auth);
-            }
-        } else {
-            await signInAnonymously(auth);
-        }
 
+        // Check user authentication status and role
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const userDocRef = doc(db, `users`, user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
+
+                    if (userDocSnap.exists() && userDocSnap.data().role === 'admin') {
+                        adminNameSpan.textContent = userDocSnap.data().name || 'Admin';
+                        fetchUsers();
+                        fetchNews();
+                        fetchSchedules();
+                        fetchPapers();
+                    } else {
+                        await signOut(auth);
+                        window.location.href = 'admin-login.html';
+                    }
+                } catch (error) {
+                    console.error("Error during authentication check:", error);
+                    await signOut(auth);
+                    window.location.href = 'admin-login.html';
+                }
+            } else {
+                window.location.href = 'admin-login.html';
+            }
+        });
+
+        // Add event listener for the logout button
         logoutBtn.addEventListener('click', async () => {
             try {
                 await signOut(auth);
             } catch (error) {
                 console.error("Error signing out:", error);
+                // Optional: display an error message
+                alert("An error occurred during logout. Please try again.");
             }
         });
 
-        // Tab switching logic
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
+        // Function to handle the delete operation
+        const handleDelete = async () => {
+            if (!itemToDelete) return;
+            
+            const { collectionName, id } = itemToDelete;
+            try {
+                const docRef = doc(db, collectionName, id);
+                await deleteDoc(docRef);
+                // The onSnapshot listeners will handle UI updates
+                closeModal();
+            } catch (error) {
+                console.error("Error deleting document:", error);
+                // Handle the error (e.g., show a temporary message)
+                closeModal();
+            }
+            itemToDelete = null;
+        };
 
-                button.classList.add('active');
-                const contentId = button.id.replace('-tab', '-content');
-                document.getElementById(contentId).classList.add('active');
-            });
-        });
+        const showModal = (collectionName, id, title) => {
+            itemToDelete = { collectionName, id };
+            document.getElementById('modal-text').textContent = `Do you really want to delete "${title}"? This action cannot be undone.`;
+            confirmationModal.classList.remove('hidden');
+        };
 
-        // --- Question Paper Management ---
-        const setupPapersListener = () => {
-            const papersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'papers');
-            onSnapshot(papersCollectionRef, (snapshot) => {
-                papersList.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const row = document.createElement('tr');
-                    row.classList.add('border-b', 'border-gray-200', 'hover:bg-gray-100');
-                    row.innerHTML = `
-                        <td class="py-3 px-6 text-left whitespace-nowrap">
-                            <span class="font-medium">${data.title}</span>
-                        </td>
-                        <td class="py-3 px-6 text-left">
-                            <a href="${data.url}" target="_blank" class="text-blue-500 hover:text-blue-700 transition duration-300">
-                                ${data.url}
-                            </a>
-                        </td>
-                        <td class="py-3 px-6 text-center">
-                            <div class="flex item-center justify-center space-x-2">
-                                <button data-id="${doc.id}" data-title="${data.title}" data-url="${data.url}" class="edit-paper-btn bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-1 px-3 rounded text-xs transition duration-300">
-                                    Edit
-                                </button>
-                                <button data-id="${doc.id}" class="delete-paper-btn bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-xs transition duration-300">
-                                    Delete
-                                </button>
-                            </div>
-                        </td>
+        const closeModal = () => {
+            confirmationModal.classList.add('hidden');
+            itemToDelete = null;
+        };
+
+        confirmDeleteBtn.addEventListener('click', handleDelete);
+        cancelDeleteBtn.addEventListener('click', closeModal);
+
+        // Function to fetch and display users using onSnapshot for real-time updates
+        const fetchUsers = () => {
+            usersListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading users...</div>`;
+            const usersCollectionRef = collection(db, 'users');
+            onSnapshot(usersCollectionRef, (snapshot) => {
+                let usersHtml = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
+                snapshot.forEach(doc => {
+                    const user = doc.data();
+                    const status = user.status || 'pending';
+                    const isApproved = status === 'approved';
+                    const statusColor = isApproved ? 'text-green-600' : 'text-yellow-600';
+
+                    usersHtml += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.email}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.batch}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm ${statusColor}">${status}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                ${!isApproved ? `<button data-id="${doc.id}" class="approve-btn text-blue-600 hover:text-blue-900 font-bold transition duration-200">Approve</button>` : `<span class="text-gray-400">Approved</span>`}
+                            </td>
+                        </tr>
                     `;
-                    papersList.appendChild(row);
                 });
 
-                document.querySelectorAll('.edit-paper-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const { id, title, url } = e.target.dataset;
-                        addPaperForm.paperTitle.value = title;
-                        addPaperForm.paperUrl.value = url;
-                        addPaperForm.dataset.editingId = id;
-                        addPaperForm.querySelector('button[type="submit"]').textContent = 'Update Paper';
+                usersHtml += `
+                        </tbody>
+                    </table>
+                `;
+                usersListDiv.innerHTML = usersHtml;
+
+                // Add event listeners for the new approve buttons
+                document.querySelectorAll('.approve-btn').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const userId = e.target.getAttribute('data-id');
+                        await approveUser(userId);
                     });
                 });
 
-                document.querySelectorAll('.delete-paper-btn').forEach(button => {
-                    button.addEventListener('click', async (e) => {
-                        const docId = e.target.dataset.id;
-                        try {
-                            const confirmDelete = window.confirm('Are you sure you want to delete this paper?');
-                            if (confirmDelete) {
-                                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'papers', docId));
-                                paperMessage.textContent = 'Question paper deleted successfully!';
-                                paperMessage.className = 'text-green-600 mt-2';
-                            }
-                        } catch (error) {
-                            console.error("Error deleting paper:", error);
-                            paperMessage.textContent = `Failed to delete paper: ${error.message}`;
-                            paperMessage.className = 'text-red-600 mt-2';
-                        }
+            }, (error) => {
+                console.error("Error fetching users:", error);
+                usersListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load users. Please check your permissions.</div>`;
+            });
+        };
+
+        const approveUser = async (userId) => {
+            try {
+                const userDocRef = doc(db, 'users', userId);
+                await updateDoc(userDocRef, {
+                    status: 'approved'
+                });
+                usersMessageDiv.textContent = 'User approved successfully!';
+                usersMessageDiv.className = 'text-green-600 mt-2';
+            } catch (error) {
+                console.error("Error approving user:", error);
+                usersMessageDiv.textContent = 'Failed to approve user.';
+                usersMessageDiv.className = 'text-red-600 mt-2';
+            }
+        };
+
+        // Function to fetch and display news
+        const fetchNews = () => {
+            publishedNewsList.innerHTML = `<div class="text-center text-gray-500 p-4">Loading news...</div>`;
+            const newsCollectionRef = collection(db, 'news');
+            onSnapshot(newsCollectionRef, (snapshot) => {
+                let newsHtml = '';
+                if (snapshot.empty) {
+                    newsHtml = '<p class="text-center text-gray-500">No news published yet.</p>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const newsItem = doc.data();
+                        newsHtml += `
+                            <div class="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+                                <h5 class="text-lg font-bold">${newsItem.title}</h5>
+                                <p class="text-gray-600 mt-1">${newsItem.content}</p>
+                                <div class="mt-4 flex space-x-2 justify-end">
+                                    <button data-id="${doc.id}" data-title="${newsItem.title}" data-content="${newsItem.content}" class="edit-news-btn text-blue-600 hover:text-blue-800 font-bold">Edit</button>
+                                    <button data-id="${doc.id}" data-title="${newsItem.title}" class="delete-news-btn text-red-600 hover:text-red-800 font-bold">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                publishedNewsList.innerHTML = newsHtml;
+                
+                // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.delete-news-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('news', id, title);
+                    });
+                });
+                // Edit button functionality to be implemented
+                document.querySelectorAll('.edit-news-btn').forEach(btn => {
+                     btn.addEventListener('click', (e) => {
+                         const id = e.target.getAttribute('data-id');
+                         const title = e.target.getAttribute('data-title');
+                         const content = e.target.getAttribute('data-content');
+                         // Populate the form with current data for editing
+                         addNewsForm.newsTitle.value = title;
+                         addNewsForm.newsContent.value = content;
+                         addNewsForm.querySelector('button[type="submit"]').textContent = 'Update News';
+                         addNewsForm.dataset.editingId = id;
+                     });
+                 });
+            });
+        };
+
+        // Function to fetch and display schedules
+        const fetchSchedules = () => {
+            publishedSchedulesList.innerHTML = `<div class="text-center text-gray-500 p-4">Loading schedules...</div>`;
+            const schedulesCollectionRef = collection(db, 'schedules');
+            onSnapshot(schedulesCollectionRef, (snapshot) => {
+                let schedulesHtml = '';
+                if (snapshot.empty) {
+                    schedulesHtml = '<p class="text-center text-gray-500">No schedules published yet.</p>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const schedule = doc.data();
+                        const scheduleData = JSON.parse(schedule.data);
+                        let tableRows = scheduleData.map(row => `
+                            <tr>
+                                <td class="px-4 py-2 text-sm text-gray-700 border-b">${row.day}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 border-b">${row.time}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 border-b">${row.subject}</td>
+                            </tr>
+                        `).join('');
+
+                        schedulesHtml += `
+                            <div class="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+                                <h5 class="text-lg font-bold">${schedule.title}</h5>
+                                <div class="mt-2 overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <tbody class="bg-white">
+                                            ${tableRows}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-4 flex space-x-2 justify-end">
+                                    <button data-id="${doc.id}" data-title="${schedule.title}" data-data='${schedule.data}' class="edit-schedule-btn text-blue-600 hover:text-blue-800 font-bold">Edit</button>
+                                    <button data-id="${doc.id}" data-title="${schedule.title}" class="delete-schedule-btn text-red-600 hover:text-red-800 font-bold">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                publishedSchedulesList.innerHTML = schedulesHtml;
+                 // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.delete-schedule-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('schedules', id, title);
+                    });
+                });
+                // Edit button functionality to be implemented
+                document.querySelectorAll('.edit-schedule-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                         const id = e.target.getAttribute('data-id');
+                         const title = e.target.getAttribute('data-title');
+                         const data = JSON.parse(e.target.getAttribute('data-data'));
+                         addScheduleForm.scheduleTitle.value = title;
+                         scheduleBody.innerHTML = '';
+                         data.forEach(item => {
+                            const newRow = document.createElement('tr');
+                            newRow.innerHTML = `
+                                <td class="px-4 py-2"><input type="text" value="${item.day}" class="w-full editable-cell rounded-md"></td>
+                                <td class="px-4 py-2"><input type="text" value="${item.time}" class="w-full editable-cell rounded-md"></td>
+                                <td class="px-4 py-2"><input type="text" value="${item.subject}" class="w-full editable-cell rounded-md"></td>
+                                <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+                            `;
+                            scheduleBody.appendChild(newRow);
+                         });
+                         addScheduleForm.querySelector('button[type="submit"]').textContent = 'Update Schedule';
+                         addScheduleForm.dataset.editingId = id;
+                     });
+                 });
+            });
+        };
+
+        // Function to fetch and display papers
+        const fetchPapers = () => {
+            publishedPapersList.innerHTML = `<div class="text-center text-gray-500 p-4">Loading papers...</div>`;
+            const papersCollectionRef = collection(db, 'papers');
+            onSnapshot(papersCollectionRef, (snapshot) => {
+                let papersHtml = '';
+                if (snapshot.empty) {
+                    papersHtml = '<p class="text-center text-gray-500">No papers uploaded yet.</p>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const paper = doc.data();
+                        papersHtml += `
+                            <div class="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between">
+                                <a href="${paper.url}" target="_blank" class="text-blue-600 hover:underline font-medium">${paper.title}</a>
+                                <div class="flex space-x-2">
+                                    <button data-id="${doc.id}" data-title="${paper.title}" data-url="${paper.url}" class="edit-paper-btn text-blue-600 hover:text-blue-800 font-bold">Edit</button>
+                                    <button data-id="${doc.id}" data-title="${paper.title}" class="delete-paper-btn text-red-600 hover:text-red-800 font-bold">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                publishedPapersList.innerHTML = papersHtml;
+                // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.delete-paper-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('papers', id, title);
+                    });
+                });
+                // Edit button functionality to be implemented
+                document.querySelectorAll('.edit-paper-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        const url = e.target.getAttribute('data-url');
+                        addPaperForm.paperTitle.value = title;
+                        addPaperForm.paperUrl.value = url;
+                        addPaperForm.querySelector('button[type="submit"]').textContent = 'Update Paper';
+                        addPaperForm.dataset.editingId = id;
                     });
                 });
             });
         };
 
+        // Event listener for adding/updating news
+        addNewsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = addNewsForm.newsTitle.value;
+            const content = addNewsForm.newsContent.value;
+            const editingId = addNewsForm.dataset.editingId;
+            try {
+                if (editingId) {
+                    const docRef = doc(db, 'news', editingId);
+                    await updateDoc(docRef, { title, content });
+                    newsMessage.textContent = 'News updated successfully!';
+                } else {
+                    await addDoc(collection(db, 'news'), {
+                        title,
+                        content,
+                        date: new Date().toISOString()
+                    });
+                    newsMessage.textContent = 'News published successfully!';
+                }
+                newsMessage.className = 'text-green-600 mt-2';
+                addNewsForm.reset();
+                delete addNewsForm.dataset.editingId;
+                addNewsForm.querySelector('button[type="submit"]').textContent = 'Publish News';
+            } catch (error) {
+                console.error("Error publishing/updating news:", error);
+                newsMessage.textContent = `Failed to publish/update news: ${error.message}`;
+                newsMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Event listener for adding/updating schedules
+        addScheduleForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = addScheduleForm.scheduleTitle.value;
+            const scheduleRows = scheduleBody.querySelectorAll('tr');
+            const scheduleData = [];
+
+            scheduleRows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const day = inputs[0].value;
+                const time = inputs[1].value;
+                const subject = inputs[2].value;
+
+                if (day && time && subject) {
+                    scheduleData.push({ day, time, subject });
+                }
+            });
+
+            if (scheduleData.length === 0) {
+                scheduleMessage.textContent = 'Please add at least one valid schedule entry.';
+                scheduleMessage.className = 'text-red-600 mt-2';
+                return;
+            }
+
+            const editingId = addScheduleForm.dataset.editingId;
+            try {
+                if (editingId) {
+                    const docRef = doc(db, 'schedules', editingId);
+                    await updateDoc(docRef, { title, data: JSON.stringify(scheduleData) });
+                    scheduleMessage.textContent = 'Schedule updated successfully!';
+                } else {
+                    await addDoc(collection(db, 'schedules'), {
+                        title,
+                        data: JSON.stringify(scheduleData),
+                        date: new Date().toISOString()
+                    });
+                    scheduleMessage.textContent = 'Schedule published successfully!';
+                }
+                scheduleMessage.className = 'text-green-600 mt-2';
+                addScheduleForm.reset();
+                delete addScheduleForm.dataset.editingId;
+                addScheduleForm.querySelector('button[type="submit"]').textContent = 'Publish Schedule';
+                scheduleBody.innerHTML = `
+                    <tr>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell rounded-md"></td>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell rounded-md"></td>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell rounded-md"></td>
+                        <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error("Error publishing/updating schedule:", error);
+                scheduleMessage.textContent = `Failed to publish/update schedule: ${error.message}`;
+                scheduleMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Event listener for adding/updating question papers
         addPaperForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const title = addPaperForm.paperTitle.value;
@@ -384,11 +664,11 @@
             const editingId = addPaperForm.dataset.editingId;
             try {
                 if (editingId) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'papers', editingId);
+                    const docRef = doc(db, 'papers', editingId);
                     await updateDoc(docRef, { title, url });
                     paperMessage.textContent = 'Question paper updated successfully!';
                 } else {
-                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'papers'), {
+                    await addDoc(collection(db, 'papers'), {
                         title,
                         url,
                         date: new Date().toISOString()
@@ -406,343 +686,6 @@
             }
         });
 
-        // --- News Management ---
-        const setupNewsListener = () => {
-            const newsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'news');
-            onSnapshot(newsCollectionRef, (snapshot) => {
-                newsList.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const newsItem = document.createElement('div');
-                    newsItem.classList.add('bg-gray-100', 'p-4', 'rounded-lg', 'shadow');
-                    newsItem.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="text-lg font-bold">${data.title}</h4>
-                                <p class="text-gray-700 mt-2">${data.content}</p>
-                                <span class="text-xs text-gray-500">${new Date(data.date).toLocaleDateString()}</span>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button data-id="${doc.id}" data-title="${data.title}" data-content="${data.content}" class="edit-news-btn bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-1 px-3 rounded text-xs transition duration-300">
-                                    Edit
-                                </button>
-                                <button data-id="${doc.id}" class="delete-news-btn bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-xs transition duration-300">
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    newsList.appendChild(newsItem);
-                });
-
-                document.querySelectorAll('.edit-news-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const { id, title, content } = e.target.dataset;
-                        addNewsForm.newsTitle.value = title;
-                        addNewsForm.newsContent.value = content;
-                        addNewsForm.dataset.editingId = id;
-                        addNewsForm.querySelector('button[type="submit"]').textContent = 'Update News';
-                    });
-                });
-
-                document.querySelectorAll('.delete-news-btn').forEach(button => {
-                    button.addEventListener('click', async (e) => {
-                        const docId = e.target.dataset.id;
-                        try {
-                            const confirmDelete = window.confirm('Are you sure you want to delete this news item?');
-                            if (confirmDelete) {
-                                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'news', docId));
-                                newsMessage.textContent = 'News item deleted successfully!';
-                                newsMessage.className = 'text-green-600 mt-2';
-                            }
-                        } catch (error) {
-                            console.error("Error deleting news:", error);
-                            newsMessage.textContent = `Failed to delete news: ${error.message}`;
-                            newsMessage.className = 'text-red-600 mt-2';
-                        }
-                    });
-                });
-            });
-        };
-
-        addNewsForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const title = addNewsForm.newsTitle.value;
-            const content = addNewsForm.newsContent.value;
-            const editingId = addNewsForm.dataset.editingId;
-            try {
-                if (editingId) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'news', editingId);
-                    await updateDoc(docRef, { title, content });
-                    newsMessage.textContent = 'News item updated successfully!';
-                } else {
-                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'news'), {
-                        title,
-                        content,
-                        date: new Date().toISOString()
-                    });
-                    newsMessage.textContent = 'News item added successfully!';
-                }
-                newsMessage.className = 'text-green-600 mt-2';
-                addNewsForm.reset();
-                delete addNewsForm.dataset.editingId;
-                addNewsForm.querySelector('button[type="submit"]').textContent = 'Add News';
-            } catch (error) {
-                console.error("Error adding/updating news:", error);
-                newsMessage.textContent = `Failed to add/update news: ${error.message}`;
-                newsMessage.className = 'text-red-600 mt-2';
-            }
-        });
-
-        // --- Schedule Management ---
-        const setupScheduleListener = () => {
-            const scheduleCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'schedules');
-            onSnapshot(scheduleCollectionRef, (snapshot) => {
-                scheduleList.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const scheduleItem = document.createElement('div');
-                    scheduleItem.classList.add('bg-gray-100', 'p-4', 'rounded-lg', 'shadow');
-                    scheduleItem.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="text-lg font-bold">${data.title}</h4>
-                                <p class="text-gray-700 mt-2">${data.description}</p>
-                                <span class="text-xs text-gray-500">${new Date(data.date).toLocaleDateString()}</span>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button data-id="${doc.id}" data-title="${data.title}" data-description="${data.description}" data-date="${data.date}" class="edit-schedule-btn bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-1 px-3 rounded text-xs transition duration-300">
-                                    Edit
-                                </button>
-                                <button data-id="${doc.id}" class="delete-schedule-btn bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-xs transition duration-300">
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    scheduleList.appendChild(scheduleItem);
-                });
-
-                document.querySelectorAll('.edit-schedule-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const { id, title, description, date } = e.target.dataset;
-                        addScheduleForm.scheduleTitle.value = title;
-                        addScheduleForm.scheduleDescription.value = description;
-                        addScheduleForm.scheduleDate.value = new Date(date).toISOString().slice(0, 10);
-                        addScheduleForm.dataset.editingId = id;
-                        addScheduleForm.querySelector('button[type="submit"]').textContent = 'Update Schedule';
-                    });
-                });
-
-                document.querySelectorAll('.delete-schedule-btn').forEach(button => {
-                    button.addEventListener('click', async (e) => {
-                        const docId = e.target.dataset.id;
-                        try {
-                            const confirmDelete = window.confirm('Are you sure you want to delete this schedule event?');
-                            if (confirmDelete) {
-                                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'schedules', docId));
-                                scheduleMessage.textContent = 'Schedule event deleted successfully!';
-                                scheduleMessage.className = 'text-green-600 mt-2';
-                            }
-                        } catch (error) {
-                            console.error("Error deleting schedule:", error);
-                            scheduleMessage.textContent = `Failed to delete schedule: ${error.message}`;
-                            scheduleMessage.className = 'text-red-600 mt-2';
-                        }
-                    });
-                });
-            });
-        };
-
-        addScheduleForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const title = addScheduleForm.scheduleTitle.value;
-            const description = addScheduleForm.scheduleDescription.value;
-            const date = addScheduleForm.scheduleDate.value;
-            const editingId = addScheduleForm.dataset.editingId;
-            try {
-                if (editingId) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'schedules', editingId);
-                    await updateDoc(docRef, { title, description, date });
-                    scheduleMessage.textContent = 'Schedule event updated successfully!';
-                } else {
-                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'schedules'), {
-                        title,
-                        description,
-                        date
-                    });
-                    scheduleMessage.textContent = 'Schedule event added successfully!';
-                }
-                scheduleMessage.className = 'text-green-600 mt-2';
-                addScheduleForm.reset();
-                delete addScheduleForm.dataset.editingId;
-                addScheduleForm.querySelector('button[type="submit"]').textContent = 'Add Schedule';
-            } catch (error) {
-                console.error("Error adding/updating schedule:", error);
-                scheduleMessage.textContent = `Failed to add/update schedule: ${error.message}`;
-                scheduleMessage.className = 'text-red-600 mt-2';
-            }
-        });
-
-        // --- Assignments Management ---
-        const teachersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'teachers');
-        const classesCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'classes');
-        const subjectsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'subjects');
-        const assignmentsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'assignments');
-
-        const setupAssignmentsListeners = () => {
-            // Populate teacher select dropdown
-            onSnapshot(teachersCollectionRef, (snapshot) => {
-                teacherSelect.innerHTML = '<option value="">-- Select a Teacher --</option>';
-                snapshot.forEach(doc => {
-                    const teacher = doc.data();
-                    const option = document.createElement('option');
-                    option.value = doc.id;
-                    option.textContent = teacher.name;
-                    teacherSelect.appendChild(option);
-                });
-            });
-
-            // Populate class select dropdown
-            onSnapshot(classesCollectionRef, (snapshot) => {
-                classSelect.innerHTML = '<option value="">-- Select a Class --</option>';
-                snapshot.forEach(doc => {
-                    const classItem = doc.data();
-                    const option = document.createElement('option');
-                    option.value = doc.id;
-                    option.textContent = classItem.name;
-                    classSelect.appendChild(option);
-                });
-            });
-
-            // Populate subject select dropdown
-            onSnapshot(subjectsCollectionRef, (snapshot) => {
-                subjectSelect.innerHTML = '<option value="">-- Select a Subject --</option>';
-                snapshot.forEach(doc => {
-                    const subject = doc.data();
-                    const option = document.createElement('option');
-                    option.value = doc.id;
-                    option.textContent = subject.name;
-                    subjectSelect.appendChild(option);
-                });
-            });
-
-            // Display current assignments
-            onSnapshot(assignmentsCollectionRef, async (snapshot) => {
-                assignmentsList.innerHTML = '';
-                const assignments = [];
-                const teachers = {};
-                const classes = {};
-                const subjects = {};
-
-                // Fetch all teachers, classes, and subjects to map IDs to names
-                const teacherDocs = await getDoc(collection(db, 'artifacts', appId, 'public', 'data', 'teachers'));
-                teacherDocs.forEach(doc => teachers[doc.id] = doc.data().name);
-
-                const classDocs = await getDoc(collection(db, 'artifacts', appId, 'public', 'data', 'classes'));
-                classDocs.forEach(doc => classes[doc.id] = doc.data().name);
-
-                const subjectDocs = await getDoc(collection(db, 'artifacts', appId, 'public', 'data', 'subjects'));
-                subjectDocs.forEach(doc => subjects[doc.id] = doc.data().name);
-
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const teacherName = teachers[data.teacherId] || 'Unknown Teacher';
-                    const className = classes[data.classId] || 'Unknown Class';
-                    const subjectName = subjects[data.subjectId] || 'Unknown Subject';
-
-                    const row = document.createElement('tr');
-                    row.classList.add('border-b', 'border-gray-200', 'hover:bg-gray-100');
-                    row.innerHTML = `
-                        <td class="py-3 px-6 text-left whitespace-nowrap">${teacherName}</td>
-                        <td class="py-3 px-6 text-left">${className}</td>
-                        <td class="py-3 px-6 text-left">${subjectName}</td>
-                        <td class="py-3 px-6 text-center">
-                            <button data-id="${doc.id}" class="delete-assignment-btn bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-xs transition duration-300">
-                                Unassign
-                            </button>
-                        </td>
-                    `;
-                    assignmentsList.appendChild(row);
-                });
-
-                document.querySelectorAll('.delete-assignment-btn').forEach(button => {
-                    button.addEventListener('click', async (e) => {
-                        const docId = e.target.dataset.id;
-                        try {
-                            const confirmDelete = window.confirm('Are you sure you want to unassign this teacher?');
-                            if (confirmDelete) {
-                                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'assignments', docId));
-                                assignmentMessage.textContent = 'Assignment removed successfully!';
-                                assignmentMessage.className = 'text-green-600 mt-2';
-                            }
-                        } catch (error) {
-                            console.error("Error deleting assignment:", error);
-                            assignmentMessage.textContent = `Failed to remove assignment: ${error.message}`;
-                            assignmentMessage.className = 'text-red-600 mt-2';
-                        }
-                    });
-                });
-            });
-        };
-
-        // Event listeners for assignment forms
-        addTeacherForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const teacherName = e.target.teacherName.value;
-            try {
-                await addDoc(teachersCollectionRef, { name: teacherName });
-                e.target.reset();
-            } catch (error) {
-                console.error("Error adding teacher:", error);
-            }
-        });
-
-        addClassForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const className = e.target.className.value;
-            try {
-                await addDoc(classesCollectionRef, { name: className });
-                e.target.reset();
-            } catch (error) {
-                console.error("Error adding class:", error);
-            }
-        });
-
-        addSubjectForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const subjectName = e.target.subjectName.value;
-            try {
-                await addDoc(subjectsCollectionRef, { name: subjectName });
-                e.target.reset();
-            } catch (error) {
-                console.error("Error adding subject:", error);
-            }
-        });
-
-        assignTeacherForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const teacherId = teacherSelect.value;
-            const classId = classSelect.value;
-            const subjectId = subjectSelect.value;
-            
-            if (!teacherId || !classId || !subjectId) {
-                assignmentMessage.textContent = 'Please select a teacher, class, and subject.';
-                assignmentMessage.className = 'text-red-600 mt-2';
-                return;
-            }
-
-            try {
-                await addDoc(assignmentsCollectionRef, { teacherId, classId, subjectId });
-                assignmentMessage.textContent = 'Teacher assigned successfully!';
-                assignmentMessage.className = 'text-green-600 mt-2';
-                assignTeacherForm.reset();
-            } catch (error) {
-                console.error("Error assigning teacher:", error);
-                assignmentMessage.textContent = `Failed to assign teacher: ${error.message}`;
-                assignmentMessage.className = 'text-red-600 mt-2';
-            }
-        });
     </script>
 </body>
 </html>
