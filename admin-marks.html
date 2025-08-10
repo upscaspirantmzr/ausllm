@@ -3,163 +3,1259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>AUS LLM - Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+        /* Style for the editable table cells */
+        .editable-cell {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            background-color: #f9fafb;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .editable-cell:focus {
+            background-color: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <nav class="bg-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-bold text-gray-800">Admin Dashboard</h1>
-        <button id="logoutBtn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Logout</button>
-    </nav>
-    <div class="container mx-auto p-6 space-y-8">
-        <!-- Admin-only functionality -->
-        <div id="admin-content" class="space-y-8 hidden">
-            <!-- Add Subject Form -->
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-semibold mb-4">Add New Subject</h2>
-                <form id="addSubjectForm" class="space-y-4">
-                    <input type="text" id="subjectTitle" placeholder="Subject Title" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Add Subject</button>
-                </form>
-            </div>
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-            <!-- Add Class Form -->
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-semibold mb-4">Add New Class</h2>
-                <form id="addClassForm" class="space-y-4">
-                    <input type="text" id="className" placeholder="Class Name (e.g., AUS LLM 2025-27)" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Add Class</button>
-                </form>
-            </div>
-
-            <!-- Add Exam Form -->
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-semibold mb-4">Add New Exam</h2>
-                <form id="addExamForm" class="space-y-4">
-                    <input type="text" id="examName" placeholder="Exam Name (e.g., Mid-Term)" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Add Exam</button>
-                </form>
-            </div>
-
-            <!-- Assign Teacher Form -->
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-semibold mb-4">Assign Teacher to Class & Subject</h2>
-                <form id="assignTeacherForm" class="space-y-4">
-                    <select id="teacherSelect" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select Teacher</option>
-                    </select>
-                    <select id="classSelect" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select Class</option>
-                    </select>
-                    <select id="subjectSelect" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select Subject</option>
-                    </select>
-                    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">Assign Teacher</button>
-                </form>
+    <!-- Header and Navigation Bar -->
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex items-center justify-between p-4">
+            <h1 class="text-3xl font-extrabold">Admin Panel</h1>
+            <!-- Hamburger Menu Button (for mobile) -->
+            <button id="menu-btn" class="md:hidden text-white focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <!-- Desktop Navigation -->
+            <nav id="desktop-menu" class="hidden md:flex flex-wrap space-x-4 lg:space-x-8">
+                <a href="#manage-users" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Users</a>
+                <a href="#manage-teachers" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Teachers</a>
+                <a href="#manage-subjects" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Subjects</a>
+                <a href="#manage-exams" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Exams</a>
+                <a href="#manage-classes" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Classes</a>
+                <a href="#manage-news" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">News</a>
+                <a href="#manage-schedules" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Schedules</a>
+                <a href="#manage-papers" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Papers</a>
+                <a href="#manage-results" class="hover:text-blue-200 transition-colors duration-200 text-lg font-medium">Results</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <span id="adminName" class="font-bold hidden md:block"></span>
+                <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
+                    Logout
+                </button>
             </div>
         </div>
-    </div>
-    
+        <!-- Mobile Navigation -->
+        <nav id="mobile-menu" class="hidden md:hidden bg-blue-800 p-4 space-y-2">
+            <a href="#manage-users" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Users</a>
+            <a href="#manage-teachers" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Teachers</a>
+            <a href="#manage-subjects" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Subjects</a>
+            <a href="#manage-exams" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Exams</a>
+            <a href="#manage-classes" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Classes</a>
+            <a href="#manage-news" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage News</a>
+            <a href="#manage-schedules" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Schedules</a>
+            <a href="#manage-papers" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Papers</a>
+            <a href="#manage-results" class="block py-2 px-4 hover:bg-blue-700 rounded-md transition-colors duration-200 font-medium">Manage Results</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 flex-grow">
+        <h2 class="text-4xl font-extrabold text-center text-gray-900 my-8">
+            Admin Dashboard
+        </h2>
+
+        <div class="space-y-12">
+            
+            <!-- Manage Users Section -->
+            <section id="manage-users" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Registered Users</h3>
+                <div id="users-list" class="overflow-x-auto">
+                    <!-- Users table will be dynamically loaded here -->
+                </div>
+                <div id="usersMessage" class="text-center text-sm mt-4"></div>
+            </section>
+            
+            <!-- Manage Teachers Section -->
+            <section id="manage-teachers" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Manage Teachers</h3>
+                <form id="addTeacherForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Assign Teacher</h4>
+                    <div>
+                        <label for="teacherId" class="block text-sm font-medium text-gray-700">Select User</label>
+                        <select id="teacherId" name="teacherId" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <!-- Users will be populated here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="teacherSubject" class="block text-sm font-medium text-gray-700">Assign Subject</label>
+                        <select id="teacherSubject" name="teacherSubject" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                             <!-- Subjects will be populated here -->
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Assign Teacher
+                    </button>
+                </form>
+                <div id="teachersMessage" class="text-center text-sm mt-4"></div>
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Assigned Teachers</h4>
+                <div id="teachers-list" class="overflow-x-auto">
+                    <!-- Assigned teachers will be loaded here -->
+                </div>
+            </section>
+            
+            <!-- Manage Subjects Section -->
+            <section id="manage-subjects" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Manage Subjects</h3>
+                <form id="addSubjectForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New Subject</h4>
+                    <div>
+                        <label for="subjectTitle" class="block text-sm font-medium text-gray-700">Subject Name</label>
+                        <input id="subjectTitle" name="subjectTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Add Subject
+                    </button>
+                </form>
+                <div id="subjectsMessage" class="text-center text-sm mt-4"></div>
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Available Subjects</h4>
+                <div id="subjects-list" class="overflow-x-auto">
+                    <!-- Subjects will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Manage Exams Section -->
+            <section id="manage-exams" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Manage Exams</h3>
+                <form id="addExamForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New Exam</h4>
+                    <div>
+                        <label for="examName" class="block text-sm font-medium text-gray-700">Exam Name</label>
+                        <input id="examName" name="examName" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Add Exam
+                    </button>
+                </form>
+                <div id="examsMessage" class="text-center text-sm mt-4"></div>
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Available Exams</h4>
+                <div id="exams-list" class="overflow-x-auto">
+                    <!-- Exams will be loaded here -->
+                </div>
+            </section>
+            
+            <!-- Manage Classes Section -->
+            <section id="manage-classes" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Manage Classes</h3>
+                <form id="addClassForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New Class</h4>
+                    <div>
+                        <label for="className" class="block text-sm font-medium text-gray-700">Class Name</label>
+                        <input id="className" name="className" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Add Class
+                    </button>
+                </form>
+                <div id="classesMessage" class="text-center text-sm mt-4"></div>
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Available Classes</h4>
+                <div id="classes-list" class="overflow-x-auto">
+                    <!-- Classes will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Add News and Updates Section -->
+            <section id="manage-news" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">News & Updates</h3>
+                <form id="addNewsForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New News/Update</h4>
+                    <div>
+                        <label for="newsTitle" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input id="newsTitle" name="newsTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="newsContent" class="block text-sm font-medium text-gray-700">Content</label>
+                        <textarea id="newsContent" name="newsContent" rows="4" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Publish News
+                    </button>
+                </form>
+                <div id="newsMessage" class="text-center text-sm mt-4"></div>
+                
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Published News</h4>
+                <div id="published-news-list" class="space-y-4">
+                    <!-- Published news will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- Add Schedules Section -->
+            <section id="manage-schedules" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Class/Exam Schedules</h3>
+                <form id="addScheduleForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Add New Schedule</h4>
+                    <div>
+                        <label for="scheduleTitle" class="block text-sm font-medium text-gray-700">Schedule Title (e.g., "Mid-term Exam Schedule")</label>
+                        <input id="scheduleTitle" name="scheduleTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div id="schedule-table-container" class="overflow-x-auto border border-gray-200 rounded-lg">
+                        <table id="schedule-table" class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="schedule-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Initial row for input -->
+                                <tr>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell rounded-md"></td>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell rounded-md"></td>
+                                    <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell rounded-md"></td>
+                                    <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="button" id="add-row-btn" class="flex-grow flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                            Add Row
+                        </button>
+                        <button type="submit" class="flex-grow flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                            Publish Schedule
+                        </button>
+                    </div>
+                </form>
+                <div id="scheduleMessage" class="text-center text-sm mt-4"></div>
+
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Published Schedules</h4>
+                <div id="published-schedules-list" class="space-y-4">
+                    <!-- Published schedules will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- Upload Previous Year Q Papers Section -->
+            <section id="manage-papers" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Question Papers</h3>
+                <form id="addPaperForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Upload New Question Paper</h4>
+                    <div>
+                        <label for="paperTitle" class="block text-sm font-medium text-gray-700">Title (e.g., "Engineering Physics - 2023")</label>
+                        <input id="paperTitle" name="paperTitle" type="text" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="paperUrl" class="block text-sm font-medium text-gray-700">Paper URL (e.g., Google Drive link)</label>
+                        <input id="paperUrl" name="paperUrl" type="url" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Upload Paper
+                    </button>
+                </form>
+                <div id="paperMessage" class="text-center text-sm mt-4"></div>
+
+                <h4 class="text-2xl font-bold text-gray-800 mt-12 mb-4">Published Question Papers</h4>
+                <div id="published-papers-list" class="space-y-4">
+                    <!-- Published papers will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- Manage Results Section -->
+            <section id="manage-results" class="p-8 bg-white rounded-2xl shadow-xl">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6">Manage Results</h3>
+                <form id="addResultForm" class="space-y-4 mb-8">
+                    <h4 class="text-xl font-semibold text-gray-700">Enter Student Marks</h4>
+                    <div>
+                        <label for="studentId" class="block text-sm font-medium text-gray-700">Select Student</label>
+                        <select id="studentId" name="studentId" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <!-- Students will be populated here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="examId" class="block text-sm font-medium text-gray-700">Select Exam</label>
+                        <select id="examId" name="examId" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <!-- Exams will be populated here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="subjectId" class="block text-sm font-medium text-gray-700">Select Subject</label>
+                        <select id="subjectId" name="subjectId" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <!-- Subjects will be populated here -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="marks" class="block text-sm font-medium text-gray-700">Marks Obtained</label>
+                        <input id="marks" name="marks" type="number" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200">
+                        Add Result
+                    </button>
+                </form>
+                <div id="resultsMessage" class="text-center text-sm mt-4"></div>
+            </section>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Are you sure?</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500" id="modal-text">
+                            Do you really want to delete this item? This action cannot be undone.
+                        </p>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Delete
+                        </button>
+                        <button id="cancel-delete-btn" class="mt-3 px-4 py-2 bg-gray-200 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-300 focus:outline-none">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { collection, addDoc, onSnapshot, query, where, getDocs, doc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { doc, getDoc, addDoc, collection, getDocs, updateDoc, onSnapshot, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
+        const adminNameSpan = document.getElementById('adminName');
         const logoutBtn = document.getElementById('logoutBtn');
-        const adminContent = document.getElementById('admin-content');
-        const addSubjectForm = document.getElementById('addSubjectForm');
-        const addClassForm = document.getElementById('addClassForm');
-        const addExamForm = document.getElementById('addExamForm');
-        const assignTeacherForm = document.getElementById('assignTeacherForm');
-        const teacherSelect = document.getElementById('teacherSelect');
-        const classSelect = document.getElementById('classSelect');
-        const subjectSelect = document.getElementById('subjectSelect');
+        const addNewsForm = document.getElementById('addNewsForm');
+        const addScheduleForm = document.getElementById('addScheduleForm');
+        const addPaperForm = document.getElementById('addPaperForm');
+        const newsMessage = document.getElementById('newsMessage');
+        const scheduleMessage = document.getElementById('scheduleMessage');
+        const paperMessage = document.getElementById('paperMessage');
+        const usersListDiv = document.getElementById('users-list');
+        const usersMessageDiv = document.getElementById('usersMessage');
+        const publishedNewsList = document.getElementById('published-news-list');
+        const publishedSchedulesList = document.getElementById('published-schedules-list');
+        const publishedPapersList = document.getElementById('published-papers-list');
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const addRowBtn = document.getElementById('add-row-btn');
+        const scheduleBody = document.getElementById('schedule-body');
 
-        // Check user authentication state and role
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userDoc = await getDocs(query(collection(db, 'users'), where('email', '==', user.email)));
-                if (!userDoc.empty && userDoc.docs[0].data().role === 'admin') {
-                    adminContent.classList.remove('hidden');
-                    loadAssignmentDropdowns();
-                } else {
-                    window.location.href = 'login.html'; // Redirect non-admins
-                }
-            } else {
-                window.location.href = 'login.html'; // Redirect if not logged in
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+
+        let itemToDelete = null;
+
+        // New elements for the new sections
+        const addTeacherForm = document.getElementById('addTeacherForm');
+        const addSubjectForm = document.getElementById('addSubjectForm');
+        const addExamForm = document.getElementById('addExamForm');
+        const addClassForm = document.getElementById('addClassForm');
+        const addResultForm = document.getElementById('addResultForm');
+
+        const teachersMessage = document.getElementById('teachersMessage');
+        const subjectsMessage = document.getElementById('subjectsMessage');
+        const examsMessage = document.getElementById('examsMessage');
+        const classesMessage = document.getElementById('classesMessage');
+        const resultsMessage = document.getElementById('resultsMessage');
+        
+        const teachersListDiv = document.getElementById('teachers-list');
+        const subjectsListDiv = document.getElementById('subjects-list');
+        const examsListDiv = document.getElementById('exams-list');
+        const classesListDiv = document.getElementById('classes-list');
+
+        const teacherIdSelect = document.getElementById('teacherId');
+        const teacherSubjectSelect = document.getElementById('teacherSubject');
+        const studentIdSelect = document.getElementById('studentId');
+        const examIdSelect = document.getElementById('examId');
+        const subjectIdSelect = document.getElementById('subjectId');
+
+        // Toggle mobile menu visibility
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Add a new row to the schedule table
+        const addScheduleRow = () => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell rounded-md"></td>
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell rounded-md"></td>
+                <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell rounded-md"></td>
+                <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+            `;
+            scheduleBody.appendChild(newRow);
+        };
+
+        // Event listener for the "Add Row" button
+        addRowBtn.addEventListener('click', addScheduleRow);
+
+        // Event listener for dynamically added remove buttons (delegated)
+        scheduleBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-row-btn')) {
+                e.target.closest('tr').remove();
             }
         });
 
-        logoutBtn.addEventListener('click', async () => {
-            await signOut(auth);
-            window.location.href = 'login.html';
+        // Check user authentication status and role
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const userDocRef = doc(db, `users`, user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
+
+                    if (userDocSnap.exists() && userDocSnap.data().role === 'admin') {
+                        adminNameSpan.textContent = userDocSnap.data().name || 'Admin';
+                        fetchUsers();
+                        fetchTeachers();
+                        fetchSubjects();
+                        fetchExams();
+                        fetchClasses();
+                        fetchNews();
+                        fetchSchedules();
+                        fetchPapers();
+                        
+                        // Populate select dropdowns
+                        populateUsersSelect();
+                        populateSubjectsSelect();
+                        populateStudentsSelect();
+                        populateExamsSelect();
+                        populateSubjectsSelectForResults();
+
+                    } else {
+                        await signOut(auth);
+                        window.location.href = 'admin-login.html';
+                    }
+                } catch (error) {
+                    console.error("Error during authentication check:", error);
+                    await signOut(auth);
+                    window.location.href = 'admin-login.html';
+                }
+            } else {
+                window.location.href = 'admin-login.html';
+            }
         });
 
-        // Load dropdowns for teacher assignment
-        const loadAssignmentDropdowns = () => {
-            // Fetch Teachers
-            onSnapshot(query(collection(db, 'users'), where('role', '==', 'teacher')), (snapshot) => {
-                teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
-                snapshot.forEach(doc => {
-                    const teacher = doc.data();
-                    teacherSelect.innerHTML += `<option value="${doc.id}">${teacher.name} (${teacher.email})</option>`;
-                });
-            });
+        // Add event listener for the logout button
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Error signing out:", error);
+                // Optional: display an error message
+                alert("An error occurred during logout. Please try again.");
+            }
+        });
 
-            // Fetch Classes
-            onSnapshot(collection(db, 'classes'), (snapshot) => {
-                classSelect.innerHTML = '<option value="">Select Class</option>';
-                snapshot.forEach(doc => {
-                    const classData = doc.data();
-                    classSelect.innerHTML += `<option value="${doc.id}">${classData.className}</option>`;
-                });
-            });
+        // Function to handle the delete operation
+        const handleDelete = async () => {
+            if (!itemToDelete) return;
+            
+            const { collectionName, id } = itemToDelete;
+            try {
+                const docRef = doc(db, collectionName, id);
+                await deleteDoc(docRef);
+                // The onSnapshot listeners will handle UI updates
+                closeModal();
+            } catch (error) {
+                console.error("Error deleting document:", error);
+                // Handle the error (e.g., show a temporary message)
+                closeModal();
+            }
+            itemToDelete = null;
+        };
 
-            // Fetch Subjects
-            onSnapshot(collection(db, 'subjects'), (snapshot) => {
-                subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        const showModal = (collectionName, id, title) => {
+            itemToDelete = { collectionName, id };
+            document.getElementById('modal-text').textContent = `Do you really want to delete "${title}"? This action cannot be undone.`;
+            confirmationModal.classList.remove('hidden');
+        };
+
+        const closeModal = () => {
+            confirmationModal.classList.add('hidden');
+            itemToDelete = null;
+        };
+
+        confirmDeleteBtn.addEventListener('click', handleDelete);
+        cancelDeleteBtn.addEventListener('click', closeModal);
+
+        // Function to fetch and display users using onSnapshot for real-time updates
+        const fetchUsers = () => {
+            usersListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading users...</div>`;
+            const usersCollectionRef = collection(db, 'users');
+            onSnapshot(usersCollectionRef, (snapshot) => {
+                let usersHtml = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
                 snapshot.forEach(doc => {
-                    const subjectData = doc.data();
-                    subjectSelect.innerHTML += `<option value="${doc.id}">${subjectData.title}</option>`;
+                    const user = doc.data();
+                    const status = user.status || 'pending';
+                    const isApproved = status === 'approved';
+                    const statusColor = isApproved ? 'text-green-600' : 'text-yellow-600';
+
+                    usersHtml += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.email}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.batch}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm ${statusColor}">${status}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                ${!isApproved ? `<button data-id="${doc.id}" class="approve-btn text-blue-600 hover:text-blue-900 font-bold transition duration-200">Approve</button>` : `<span class="text-gray-400">Approved</span>`}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                usersHtml += `
+                        </tbody>
+                    </table>
+                `;
+                usersListDiv.innerHTML = usersHtml;
+
+                // Add event listeners for the new approve buttons
+                document.querySelectorAll('.approve-btn').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const userId = e.target.getAttribute('data-id');
+                        await approveUser(userId);
+                    });
+                });
+
+            }, (error) => {
+                console.error("Error fetching users:", error);
+                usersListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load users. Please check your permissions.</div>`;
+            });
+        };
+
+        const approveUser = async (userId) => {
+            try {
+                const userDocRef = doc(db, 'users', userId);
+                await updateDoc(userDocRef, {
+                    status: 'approved'
+                });
+                usersMessageDiv.textContent = 'User approved successfully!';
+                usersMessageDiv.className = 'text-green-600 mt-2';
+            } catch (error) {
+                console.error("Error approving user:", error);
+                usersMessageDiv.textContent = 'Failed to approve user.';
+                usersMessageDiv.className = 'text-red-600 mt-2';
+            }
+        };
+
+        // Function to fetch and display news
+        const fetchNews = () => {
+            publishedNewsList.innerHTML = `<div class="text-center text-gray-500 p-4">Loading news...</div>`;
+            const newsCollectionRef = collection(db, 'news');
+            onSnapshot(newsCollectionRef, (snapshot) => {
+                let newsHtml = '';
+                if (snapshot.empty) {
+                    newsHtml = '<p class="text-center text-gray-500">No news published yet.</p>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const newsItem = doc.data();
+                        newsHtml += `
+                            <div class="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+                                <h5 class="text-lg font-bold">${newsItem.title}</h5>
+                                <p class="text-gray-600 mt-1">${newsItem.content}</p>
+                                <div class="mt-4 flex space-x-2 justify-end">
+                                    <button data-id="${doc.id}" data-title="${newsItem.title}" data-content="${newsItem.content}" class="edit-news-btn text-blue-600 hover:text-blue-800 font-bold">Edit</button>
+                                    <button data-id="${doc.id}" data-title="${newsItem.title}" class="delete-news-btn text-red-600 hover:text-red-800 font-bold">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                publishedNewsList.innerHTML = newsHtml;
+                
+                // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.delete-news-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('news', id, title);
+                    });
+                });
+                // Edit button functionality to be implemented
+                document.querySelectorAll('.edit-news-btn').forEach(btn => {
+                     btn.addEventListener('click', (e) => {
+                         const id = e.target.getAttribute('data-id');
+                         const title = e.target.getAttribute('data-title');
+                         const content = e.target.getAttribute('data-content');
+                         // Populate the form with current data for editing
+                         addNewsForm.newsTitle.value = title;
+                         addNewsForm.newsContent.value = content;
+                         addNewsForm.querySelector('button[type="submit"]').textContent = 'Update News';
+                         addNewsForm.dataset.editingId = id;
+                     });
+                 });
+            });
+        };
+
+        // Function to fetch and display schedules
+        const fetchSchedules = () => {
+            publishedSchedulesList.innerHTML = `<div class="text-center text-gray-500 p-4">Loading schedules...</div>`;
+            const schedulesCollectionRef = collection(db, 'schedules');
+            onSnapshot(schedulesCollectionRef, (snapshot) => {
+                let schedulesHtml = '';
+                if (snapshot.empty) {
+                    schedulesHtml = '<p class="text-center text-gray-500">No schedules published yet.</p>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const schedule = doc.data();
+                        const scheduleData = JSON.parse(schedule.data);
+                        let tableRows = scheduleData.map(row => `
+                            <tr>
+                                <td class="px-4 py-2 text-sm text-gray-700 border-b">${row.day}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 border-b">${row.time}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 border-b">${row.subject}</td>
+                            </tr>
+                        `).join('');
+
+                        schedulesHtml += `
+                            <div class="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+                                <h5 class="text-lg font-bold">${schedule.title}</h5>
+                                <div class="mt-2 overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <tbody class="bg-white">
+                                            ${tableRows}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-4 flex space-x-2 justify-end">
+                                    <button data-id="${doc.id}" data-title="${schedule.title}" data-data='${schedule.data}' class="edit-schedule-btn text-blue-600 hover:text-blue-800 font-bold">Edit</button>
+                                    <button data-id="${doc.id}" data-title="${schedule.title}" class="delete-schedule-btn text-red-600 hover:text-red-800 font-bold">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                publishedSchedulesList.innerHTML = schedulesHtml;
+                 // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.delete-schedule-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('schedules', id, title);
+                    });
+                });
+                // Edit button functionality to be implemented
+                document.querySelectorAll('.edit-schedule-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                         const id = e.target.getAttribute('data-id');
+                         const title = e.target.getAttribute('data-title');
+                         const data = JSON.parse(e.target.getAttribute('data-data'));
+                         addScheduleForm.scheduleTitle.value = title;
+                         scheduleBody.innerHTML = '';
+                         data.forEach(item => {
+                            const newRow = document.createElement('tr');
+                            newRow.innerHTML = `
+                                <td class="px-4 py-2"><input type="text" value="${item.day}" class="w-full editable-cell rounded-md"></td>
+                                <td class="px-4 py-2"><input type="text" value="${item.time}" class="w-full editable-cell rounded-md"></td>
+                                <td class="px-4 py-2"><input type="text" value="${item.subject}" class="w-full editable-cell rounded-md"></td>
+                                <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+                            `;
+                            scheduleBody.appendChild(newRow);
+                         });
+                         addScheduleForm.querySelector('button[type="submit"]').textContent = 'Update Schedule';
+                         addScheduleForm.dataset.editingId = id;
+                     });
+                 });
+            });
+        };
+
+        // Function to fetch and display papers
+        const fetchPapers = () => {
+            publishedPapersList.innerHTML = `<div class="text-center text-gray-500 p-4">Loading papers...</div>`;
+            const papersCollectionRef = collection(db, 'papers');
+            onSnapshot(papersCollectionRef, (snapshot) => {
+                let papersHtml = '';
+                if (snapshot.empty) {
+                    papersHtml = '<p class="text-center text-gray-500">No papers uploaded yet.</p>';
+                } else {
+                    snapshot.forEach(doc => {
+                        const paper = doc.data();
+                        papersHtml += `
+                            <div class="p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between">
+                                <a href="${paper.url}" target="_blank" class="text-blue-600 hover:underline font-medium">${paper.title}</a>
+                                <div class="flex space-x-2">
+                                    <button data-id="${doc.id}" data-title="${paper.title}" data-url="${paper.url}" class="edit-paper-btn text-blue-600 hover:text-blue-800 font-bold">Edit</button>
+                                    <button data-id="${doc.id}" data-title="${paper.title}" class="delete-paper-btn text-red-600 hover:text-red-800 font-bold">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                publishedPapersList.innerHTML = papersHtml;
+                // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.delete-paper-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('papers', id, title);
+                    });
+                });
+                // Edit button functionality to be implemented
+                document.querySelectorAll('.edit-paper-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        const url = e.target.getAttribute('data-url');
+                        addPaperForm.paperTitle.value = title;
+                        addPaperForm.paperUrl.value = url;
+                        addPaperForm.querySelector('button[type="submit"]').textContent = 'Update Paper';
+                        addPaperForm.dataset.editingId = id;
+                    });
                 });
             });
         };
 
-        // Form Submission Handlers
+        // Event listener for adding/updating news
+        addNewsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = addNewsForm.newsTitle.value;
+            const content = addNewsForm.newsContent.value;
+            const editingId = addNewsForm.dataset.editingId;
+            try {
+                if (editingId) {
+                    const docRef = doc(db, 'news', editingId);
+                    await updateDoc(docRef, { title, content });
+                    newsMessage.textContent = 'News updated successfully!';
+                } else {
+                    await addDoc(collection(db, 'news'), {
+                        title,
+                        content,
+                        date: new Date().toISOString()
+                    });
+                    newsMessage.textContent = 'News published successfully!';
+                }
+                newsMessage.className = 'text-green-600 mt-2';
+                addNewsForm.reset();
+                delete addNewsForm.dataset.editingId;
+                addNewsForm.querySelector('button[type="submit"]').textContent = 'Publish News';
+            } catch (error) {
+                console.error("Error publishing/updating news:", error);
+                newsMessage.textContent = `Failed to publish/update news: ${error.message}`;
+                newsMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Event listener for adding/updating schedules
+        addScheduleForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = addScheduleForm.scheduleTitle.value;
+            const scheduleRows = scheduleBody.querySelectorAll('tr');
+            const scheduleData = [];
+
+            scheduleRows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const day = inputs[0].value;
+                const time = inputs[1].value;
+                const subject = inputs[2].value;
+
+                if (day && time && subject) {
+                    scheduleData.push({ day, time, subject });
+                }
+            });
+
+            if (scheduleData.length === 0) {
+                scheduleMessage.textContent = 'Please add at least one valid schedule entry.';
+                scheduleMessage.className = 'text-red-600 mt-2';
+                return;
+            }
+
+            const editingId = addScheduleForm.dataset.editingId;
+            try {
+                if (editingId) {
+                    const docRef = doc(db, 'schedules', editingId);
+                    await updateDoc(docRef, { title, data: JSON.stringify(scheduleData) });
+                    scheduleMessage.textContent = 'Schedule updated successfully!';
+                } else {
+                    await addDoc(collection(db, 'schedules'), {
+                        title,
+                        data: JSON.stringify(scheduleData),
+                        date: new Date().toISOString()
+                    });
+                    scheduleMessage.textContent = 'Schedule published successfully!';
+                }
+                scheduleMessage.className = 'text-green-600 mt-2';
+                addScheduleForm.reset();
+                delete addScheduleForm.dataset.editingId;
+                addScheduleForm.querySelector('button[type="submit"]').textContent = 'Publish Schedule';
+                scheduleBody.innerHTML = `
+                    <tr>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., Monday" class="w-full editable-cell rounded-md"></td>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., 9:00 AM" class="w-full editable-cell rounded-md"></td>
+                        <td class="px-4 py-2"><input type="text" placeholder="e.g., Physics" class="w-full editable-cell rounded-md"></td>
+                        <td class="px-4 py-2 text-center"><button type="button" class="remove-row-btn text-red-600 hover:text-red-800">Remove</button></td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error("Error publishing/updating schedule:", error);
+                scheduleMessage.textContent = `Failed to publish/update schedule: ${error.message}`;
+                scheduleMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Event listener for adding/updating question papers
+        addPaperForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = addPaperForm.paperTitle.value;
+            const url = addPaperForm.paperUrl.value;
+            const editingId = addPaperForm.dataset.editingId;
+            try {
+                if (editingId) {
+                    const docRef = doc(db, 'papers', editingId);
+                    await updateDoc(docRef, { title, url });
+                    paperMessage.textContent = 'Question paper updated successfully!';
+                } else {
+                    await addDoc(collection(db, 'papers'), {
+                        title,
+                        url,
+                        date: new Date().toISOString()
+                    });
+                    paperMessage.textContent = 'Question paper uploaded successfully!';
+                }
+                paperMessage.className = 'text-green-600 mt-2';
+                addPaperForm.reset();
+                delete addPaperForm.dataset.editingId;
+                addPaperForm.querySelector('button[type="submit"]').textContent = 'Upload Paper';
+            } catch (error) {
+                console.error("Error uploading/updating paper:", error);
+                paperMessage.textContent = `Failed to upload/update paper: ${error.message}`;
+                paperMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // --- New Functionality for managing teachers, subjects, exams, classes, and results ---
+
+        // Function to populate select dropdowns with users
+        const populateUsersSelect = async () => {
+            teacherIdSelect.innerHTML = '<option value="" disabled selected>Select a user</option>';
+            studentIdSelect.innerHTML = '<option value="" disabled selected>Select a student</option>';
+            try {
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${user.name} (${user.email})`;
+                    teacherIdSelect.appendChild(option);
+                    studentIdSelect.appendChild(option.cloneNode(true));
+                });
+            } catch (error) {
+                console.error("Error populating users select:", error);
+            }
+        };
+
+        // Function to populate select dropdowns with subjects
+        const populateSubjectsSelect = async () => {
+            teacherSubjectSelect.innerHTML = '<option value="" disabled selected>Select a subject</option>';
+            try {
+                const subjectsSnapshot = await getDocs(collection(db, 'subjects'));
+                subjectsSnapshot.forEach(doc => {
+                    const subject = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = subject.title;
+                    teacherSubjectSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error populating subjects select:", error);
+            }
+        };
+
+        // Function to populate subjects select for the results form
+        const populateSubjectsSelectForResults = async () => {
+             subjectIdSelect.innerHTML = '<option value="" disabled selected>Select a subject</option>';
+             try {
+                 const subjectsSnapshot = await getDocs(collection(db, 'subjects'));
+                 subjectsSnapshot.forEach(doc => {
+                     const subject = doc.data();
+                     const option = document.createElement('option');
+                     option.value = doc.id;
+                     option.textContent = subject.title;
+                     subjectIdSelect.appendChild(option);
+                 });
+             } catch (error) {
+                 console.error("Error populating subjects select:", error);
+             }
+        };
+
+        // Function to populate select dropdowns with students
+        const populateStudentsSelect = async () => {
+            studentIdSelect.innerHTML = '<option value="" disabled selected>Select a student</option>';
+            try {
+                const studentsQuery = query(collection(db, 'users'), where('role', '==', 'student'));
+                const studentsSnapshot = await getDocs(studentsQuery);
+                studentsSnapshot.forEach(doc => {
+                    const student = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${student.name} (${student.batch})`;
+                    studentIdSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error populating students select:", error);
+            }
+        };
+
+        // Function to populate select dropdowns with exams
+        const populateExamsSelect = async () => {
+            examIdSelect.innerHTML = '<option value="" disabled selected>Select an exam</option>';
+            try {
+                const examsSnapshot = await getDocs(collection(db, 'exams'));
+                examsSnapshot.forEach(doc => {
+                    const exam = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = exam.examName;
+                    examIdSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error populating exams select:", error);
+            }
+        };
+        
+        // Fetch and display teachers using onSnapshot for real-time updates
+        const fetchTeachers = () => {
+            teachersListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading teachers...</div>`;
+            const teachersCollectionRef = collection(db, 'teacherAssignments');
+            onSnapshot(teachersCollectionRef, async (snapshot) => {
+                let teachersHtml = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teacher Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
+                const fetchPromises = snapshot.docs.map(async (docRef) => {
+                    const assignment = docRef.data();
+                    const user = (await getDoc(doc(db, 'users', assignment.teacherId))).data();
+                    const subject = (await getDoc(doc(db, 'subjects', assignment.subjectId))).data();
+                    
+                    return `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user?.name || 'Unknown User'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${subject?.title || 'Unknown Subject'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                <button data-id="${docRef.id}" data-title="${user?.name || 'Teacher'}" class="delete-btn text-red-600 hover:text-red-900 font-bold transition duration-200">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                teachersHtml += (await Promise.all(fetchPromises)).join('');
+                teachersHtml += `</tbody></table>`;
+                teachersListDiv.innerHTML = teachersHtml;
+                
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('teacherAssignments', id, title);
+                    });
+                });
+            }, (error) => {
+                console.error("Error fetching teachers:", error);
+                teachersListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load teachers.</div>`;
+            });
+        };
+        
+        // Fetch and display subjects using onSnapshot for real-time updates
+        const fetchSubjects = () => {
+            subjectsListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading subjects...</div>`;
+            const subjectsCollectionRef = collection(db, 'subjects');
+            onSnapshot(subjectsCollectionRef, (snapshot) => {
+                let subjectsHtml = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
+                snapshot.forEach(docRef => {
+                    const subject = docRef.data();
+                    subjectsHtml += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${subject.title}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                <button data-id="${docRef.id}" data-title="${subject.title}" class="delete-btn text-red-600 hover:text-red-900 font-bold transition duration-200">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                subjectsHtml += `</tbody></table>`;
+                subjectsListDiv.innerHTML = subjectsHtml;
+                
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('subjects', id, title);
+                    });
+                });
+            }, (error) => {
+                console.error("Error fetching subjects:", error);
+                subjectsListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load subjects.</div>`;
+            });
+        };
+
+        // Fetch and display exams using onSnapshot for real-time updates
+        const fetchExams = () => {
+            examsListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading exams...</div>`;
+            const examsCollectionRef = collection(db, 'exams');
+            onSnapshot(examsCollectionRef, (snapshot) => {
+                let examsHtml = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exam Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
+                snapshot.forEach(docRef => {
+                    const exam = docRef.data();
+                    examsHtml += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${exam.examName}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                <button data-id="${docRef.id}" data-title="${exam.examName}" class="delete-btn text-red-600 hover:text-red-900 font-bold transition duration-200">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                examsHtml += `</tbody></table>`;
+                examsListDiv.innerHTML = examsHtml;
+                
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('exams', id, title);
+                    });
+                });
+            }, (error) => {
+                console.error("Error fetching exams:", error);
+                examsListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load exams.</div>`;
+            });
+        };
+
+        // Fetch and display classes using onSnapshot for real-time updates
+        const fetchClasses = () => {
+            classesListDiv.innerHTML = `<div class="text-center text-gray-500 p-4">Loading classes...</div>`;
+            const classesCollectionRef = collection(db, 'classes');
+            onSnapshot(classesCollectionRef, (snapshot) => {
+                let classesHtml = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                
+                snapshot.forEach(docRef => {
+                    const classItem = docRef.data();
+                    classesHtml += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${classItem.className}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                <button data-id="${docRef.id}" data-title="${classItem.className}" class="delete-btn text-red-600 hover:text-red-900 font-bold transition duration-200">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                classesHtml += `</tbody></table>`;
+                classesListDiv.innerHTML = classesHtml;
+                
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const title = e.target.getAttribute('data-title');
+                        showModal('classes', id, title);
+                    });
+                });
+            }, (error) => {
+                console.error("Error fetching classes:", error);
+                classesListDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-600 rounded-md">Failed to load classes.</div>`;
+            });
+        };
+
+        // Add Teacher Assignment Form submission
+        addTeacherForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const teacherId = addTeacherForm.teacherId.value;
+            const subjectId = addTeacherForm.teacherSubject.value;
+            
+            if (!teacherId || !subjectId) {
+                teachersMessage.textContent = 'Please select both a user and a subject.';
+                teachersMessage.className = 'text-red-600 mt-2';
+                return;
+            }
+
+            try {
+                // First, update the user's role to 'teacher'
+                const userDocRef = doc(db, 'users', teacherId);
+                await updateDoc(userDocRef, { role: 'teacher' });
+
+                // Then, create the assignment
+                await addDoc(collection(db, 'teacherAssignments'), {
+                    teacherId,
+                    subjectId,
+                    date: new Date().toISOString()
+                });
+                teachersMessage.textContent = 'Teacher assigned successfully!';
+                teachersMessage.className = 'text-green-600 mt-2';
+                addTeacherForm.reset();
+            } catch (error) {
+                console.error("Error assigning teacher:", error);
+                teachersMessage.textContent = `Failed to assign teacher: ${error.message}`;
+                teachersMessage.className = 'text-red-600 mt-2';
+            }
+        });
+        
+        // Add Subject Form submission
         addSubjectForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const title = addSubjectForm.subjectTitle.value;
-            await addDoc(collection(db, 'subjects'), { title });
-            addSubjectForm.reset();
+            try {
+                await addDoc(collection(db, 'subjects'), { title });
+                subjectsMessage.textContent = 'Subject added successfully!';
+                subjectsMessage.className = 'text-green-600 mt-2';
+                addSubjectForm.reset();
+            } catch (error) {
+                console.error("Error adding subject:", error);
+                subjectsMessage.textContent = `Failed to add subject: ${error.message}`;
+                subjectsMessage.className = 'text-red-600 mt-2';
+            }
         });
 
-        addClassForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const className = addClassForm.className.value;
-            await addDoc(collection(db, 'classes'), { className });
-            addClassForm.reset();
-        });
-
+        // Add Exam Form submission
         addExamForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const examName = addExamForm.examName.value;
-            await addDoc(collection(db, 'exams'), { examName });
-            addExamForm.reset();
+            try {
+                await addDoc(collection(db, 'exams'), { examName });
+                examsMessage.textContent = 'Exam added successfully!';
+                examsMessage.className = 'text-green-600 mt-2';
+                addExamForm.reset();
+            } catch (error) {
+                console.error("Error adding exam:", error);
+                examsMessage.textContent = `Failed to add exam: ${error.message}`;
+                examsMessage.className = 'text-red-600 mt-2';
+            }
         });
 
-        assignTeacherForm.addEventListener('submit', async (e) => {
+        // Add Class Form submission
+        addClassForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const teacherId = assignTeacherForm.teacherSelect.value;
-            const classId = assignTeacherForm.classSelect.value;
-            const subjectId = assignTeacherForm.subjectSelect.value;
-            await addDoc(collection(db, 'teacherAssignments'), { teacherId, classId, subjectId });
-            assignTeacherForm.reset();
+            const className = addClassForm.className.value;
+            try {
+                await addDoc(collection(db, 'classes'), { className });
+                classesMessage.textContent = 'Class added successfully!';
+                classesMessage.className = 'text-green-600 mt-2';
+                addClassForm.reset();
+            } catch (error) {
+                console.error("Error adding class:", error);
+                classesMessage.textContent = `Failed to add class: ${error.message}`;
+                classesMessage.className = 'text-red-600 mt-2';
+            }
+        });
+
+        // Add Result Form submission
+        addResultForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const studentId = addResultForm.studentId.value;
+            const examId = addResultForm.examId.value;
+            const subjectId = addResultForm.subjectId.value;
+            const marks = addResultForm.marks.value;
+            
+            if (!studentId || !examId || !subjectId || !marks) {
+                resultsMessage.textContent = 'Please fill out all fields.';
+                resultsMessage.className = 'text-red-600 mt-2';
+                return;
+            }
+
+            try {
+                // Check if a result already exists for this student, exam, and subject
+                const resultQuery = await getDocs(
+                    query(
+                        collection(db, 'results'),
+                        where('studentId', '==', studentId),
+                        where('examId', '==', examId),
+                        where('subjectId', '==', subjectId)
+                    )
+                );
+
+                if (!resultQuery.empty) {
+                    const resultDoc = resultQuery.docs[0];
+                    const docRef = doc(db, 'results', resultDoc.id);
+                    await updateDoc(docRef, { marks: parseInt(marks) });
+                    resultsMessage.textContent = 'Result updated successfully!';
+                } else {
+                    await addDoc(collection(db, 'results'), {
+                        studentId,
+                        examId,
+                        subjectId,
+                        marks: parseInt(marks),
+                        date: new Date().toISOString()
+                    });
+                    resultsMessage.textContent = 'Result added successfully!';
+                }
+                
+                resultsMessage.className = 'text-green-600 mt-2';
+                addResultForm.reset();
+            } catch (error) {
+                console.error("Error adding/updating result:", error);
+                resultsMessage.textContent = `Failed to add/update result: ${error.message}`;
+                resultsMessage.className = 'text-red-600 mt-2';
+            }
         });
     </script>
 </body>
