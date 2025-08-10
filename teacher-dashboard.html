@@ -81,10 +81,10 @@
                     loadExamDropdown();
                     loadTeacherAssignments(user.uid);
                 } else {
-                    window.location.href = 'login.html';
+                    window.location.href = 'teacher-login.html';
                 }
             } else {
-                window.location.href = 'login.html';
+                window.location.href = 'teacher-login.html';
             }
         });
 
@@ -122,7 +122,7 @@
                 for (const classId of Array.from(classIds)) {
                     const classDoc = await getDocs(query(collection(db, 'classes'), where('__name__', '==', classId)));
                     if (!classDoc.empty) {
-                        classSelect.innerHTML += `<option value="${classDoc.docs[0].id}">${classDoc.docs[0].data().className}</option>`;
+                        classSelect.innerHTML += `<option value="${classDoc.docs[0].id}" data-class-name="${classDoc.docs[0].data().className}">${classDoc.docs[0].data().className}</option>`;
                     }
                 }
 
@@ -141,6 +141,7 @@
             const classId = classSelect.value;
             const subjectId = subjectSelect.value;
             const examId = examSelect.value;
+            const className = classSelect.options[classSelect.selectedIndex].dataset.className;
 
             if (!classId || !subjectId || !examId) {
                 alert('Please select an exam, class, and subject.');
@@ -157,8 +158,8 @@
             marksForm.classList.remove('hidden');
             studentsTableBody.innerHTML = '';
 
-            // Fetch students for the selected class
-            const studentsQuery = query(collection(db, 'users'), where('role', '==', 'student'), where('batch', '==', classId));
+            // Fetch students for the selected class using the className
+            const studentsQuery = query(collection(db, 'users'), where('role', '==', 'student'), where('batch', '==', className));
             onSnapshot(studentsQuery, async (snapshot) => {
                 studentsTableBody.innerHTML = '';
                 for (const studentDoc of snapshot.docs) {
