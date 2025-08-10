@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Portal - Teacher Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Teacher Portal</h1>
+            <div class="flex items-center space-x-4">
+                <span id="userName" class="font-medium text-gray-700">Loading...</span>
+                <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 flex-grow">
+        <h2 id="welcomeMessage" class="text-3xl font-extrabold text-center text-gray-900 mb-6">
+            Welcome to the Teacher Panel!
+        </h2>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Select an Assignment to Grade</h3>
+            <select id="assignmentSelector" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">-- Select a Class and Subject --</option>
+            </select>
+        </div>
+
+        <div id="gradingSection" class="bg-white rounded-xl shadow-lg p-6" style="display:none;">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Grade Students</h3>
+            <p id="selectedAssignmentInfo" class="text-gray-600 mb-4"></p>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg shadow">
+                    <thead>
+                        <tr class="w-full bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Student Name</th>
+                            <th class="py-3 px-6 text-left">Student Email</th>
+                            <th class="py-3 px-6 text-left">Enter Marks</th>
+                            <th class="py-3 px-6 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody" class="text-gray-600 text-sm font-light">
+                        <!-- Student rows will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, getDoc, setDoc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // IMPORTANT: Use the provided global variables
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // UI Elements
+        const userNameSpan = document.getElementById('userName');
+        const welcomeMessageHeader = document.getElementById('welcomeMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const assignmentSelector = document.getElementById('assignmentSelector');
+        const gradingSection = document.getElementById('gradingSection');
+        const studentsTableBody = document.getElementById('studentsTableBody');
+        const selectedAssignmentInfo = document.getElementById('selectedAssignmentInfo');
+
+        let teacherId = null;
+        let dbInstance = null;
+
+        // Authentication State Observer
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                teacherId = user.uid;
+                dbInstance = db;
+                
+                // Get the user's data from the users collection
+                const userDocRef = doc(db, 'artifacts', appId, 'users', teacherId, 'userData', teacherId);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    
+                    // Check if the user is a teacher
+                    if (userData.role === 'teacher') {
+                        const name = userData.name || 'Teacher';
+                        userNameSpan.textContent = name;
+                        welcomeMessageHeader.textContent = `Welcome, ${name}!`;
+                        setupAssignmentsListener();
+                    } else {
+                        // Not a teacher, redirect to the regular dashboard
+                        window.location.href = 'dashboard.html';
+                    }
+                } else {
+                    // User data not found, redirect to login
+                    window.location.href = 'index.html';
+                }
+            } else {
+                // User is signed out, redirect to the login page
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // Handle sign-in with custom token or anonymously
+        if (initialAuthToken) {
+            try {
+                await signInWithCustomToken(auth, initialAuthToken);
+            } catch (error) {
+                console.error("Error signing in with custom token:", error);
+                await signInAnonymously(auth);
+            }
+        } else {
+            await signInAnonymously(auth);
+        }
+
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Error signing out:", error);
+            }
+        });
+        
+        // Listener for assignments assigned to this teacher
+        const setupAssignmentsListener = () => {
+            const assignmentsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'assignments');
+            const assignmentsQuery = query(assignmentsCollectionRef, where('teacherId', '==', teacherId));
+
+            onSnapshot(assignmentsQuery, async (snapshot) => {
+                assignmentSelector.innerHTML = '<option value="">-- Select a Class and Subject --</option>';
+                if (snapshot.empty) {
+                    const option = document.createElement('option');
+                    option.textContent = 'No assignments found.';
+                    option.disabled = true;
+                    assignmentSelector.appendChild(option);
+                    gradingSection.style.display = 'none';
+                    return;
+                }
+
+                // Fetch necessary data (classes, subjects) to display in the dropdown
+                const classesSnapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'classes'));
+                const subjectsSnapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'subjects'));
+                const classes = {};
+                classesSnapshot.forEach(doc => classes[doc.id] = doc.data().name);
+                const subjects = {};
+                subjectsSnapshot.forEach(doc => subjects[doc.id] = doc.data().name);
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const className = classes[data.classId] || 'Unknown Class';
+                    const subjectName = subjects[data.subjectId] || 'Unknown Subject';
+
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${className} - ${subjectName}`;
+                    assignmentSelector.appendChild(option);
+                });
+            });
+        };
+
+        // Event listener for when an assignment is selected
+        assignmentSelector.addEventListener('change', async (e) => {
+            const assignmentId = e.target.value;
+            if (assignmentId) {
+                gradingSection.style.display = 'block';
+                const assignmentDocSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'assignments', assignmentId));
+                const assignmentData = assignmentDocSnap.data();
+
+                // Fetch names of class and subject to display
+                const classDocSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'classes', assignmentData.classId));
+                const subjectDocSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'subjects', assignmentData.subjectId));
+                const className = classDocSnap.data()?.name || 'Unknown Class';
+                const subjectName = subjectDocSnap.data()?.name || 'Unknown Subject';
+                
+                selectedAssignmentInfo.textContent = `Grading for: ${className} - ${subjectName}`;
+
+                // Fetch students for the selected class
+                const studentsCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+                const studentsQuery = query(studentsCollectionRef, where('classId', '==', assignmentData.classId));
+                
+                onSnapshot(studentsQuery, async (snapshot) => {
+                    studentsTableBody.innerHTML = '';
+                    if (snapshot.empty) {
+                        studentsTableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">No students found in this class.</td></tr>';
+                        return;
+                    }
+                    
+                    for (const studentDoc of snapshot.docs) {
+                        const studentData = studentDoc.data();
+                        const studentId = studentDoc.id;
+
+                        // Check for existing mark for this student and assignment
+                        const markDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'marks', `${assignmentId}_${studentId}`);
+                        const markDocSnap = await getDoc(markDocRef);
+                        const existingMark = markDocSnap.exists() ? markDocSnap.data().mark : '';
+
+                        const row = document.createElement('tr');
+                        row.classList.add('border-b', 'border-gray-200', 'hover:bg-gray-100');
+                        row.innerHTML = `
+                            <td class="py-3 px-6 text-left">${studentData.name}</td>
+                            <td class="py-3 px-6 text-left">${studentData.email || 'N/A'}</td>
+                            <td class="py-3 px-6 text-left">
+                                <input type="number" value="${existingMark}" class="marks-input w-24 px-2 py-1 border rounded" data-student-id="${studentId}">
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <button class="save-mark-btn bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded text-xs transition duration-300" data-student-id="${studentId}">
+                                    Save
+                                </button>
+                                <span class="message-area text-xs ml-2"></span>
+                            </td>
+                        `;
+                        studentsTableBody.appendChild(row);
+                    }
+                    
+                    // Attach event listeners to the new Save buttons
+                    studentsTableBody.querySelectorAll('.save-mark-btn').forEach(button => {
+                        button.addEventListener('click', async (e) => {
+                            const studentId = e.target.dataset.studentId;
+                            const markInput = studentsTableBody.querySelector(`input[data-student-id="${studentId}"]`);
+                            const mark = markInput.value;
+                            const messageArea = e.target.nextElementSibling;
+                            
+                            if (mark === '' || isNaN(mark)) {
+                                messageArea.textContent = 'Please enter a valid number.';
+                                messageArea.className = 'message-area text-red-500 text-xs ml-2';
+                                return;
+                            }
+                            
+                            try {
+                                const markDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'marks', `${assignmentId}_${studentId}`);
+                                await setDoc(markDocRef, {
+                                    assignmentId: assignmentId,
+                                    studentId: studentId,
+                                    teacherId: teacherId,
+                                    mark: parseInt(mark, 10),
+                                    timestamp: new Date().toISOString()
+                                });
+                                messageArea.textContent = 'Saved!';
+                                messageArea.className = 'message-area text-green-500 text-xs ml-2';
+                            } catch (error) {
+                                console.error("Error saving mark:", error);
+                                messageArea.textContent = `Error: ${error.message}`;
+                                messageArea.className = 'message-area text-red-500 text-xs ml-2';
+                            }
+                        });
+                    });
+                });
+            } else {
+                gradingSection.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
