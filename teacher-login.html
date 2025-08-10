@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Login - Class Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-6">
+            Teacher Login
+        </h2>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                <input id="email" name="email" type="email" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input id="password" name="password" type="password" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    Sign In as Teacher
+                </button>
+            </div>
+        </form>
+        <div id="message" class="text-center text-sm mt-4"></div>
+        <p class="mt-6 text-center text-sm text-gray-600">
+            Are you a student? <a href="login.html" class="font-medium text-blue-600 hover:text-blue-500">Go to Student Login</a>
+        </p>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { signOut } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+
+        const loginForm = document.getElementById('loginForm');
+        const messageDiv = document.getElementById('message');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Check user role from Firestore
+                const userQuery = query(collection(db, 'users'), where('email', '==', user.email));
+                const userDocSnap = await getDocs(userQuery);
+
+                if (!userDocSnap.empty) {
+                    const userData = userDocSnap.docs[0].data();
+                    if (userData.role === 'teacher') {
+                        window.location.href = 'teacher-dashboard.html';
+                    } else {
+                        // If user is not a teacher, sign them out and show an error
+                        await signOut(auth);
+                        messageDiv.textContent = 'You do not have teacher access.';
+                        messageDiv.className = 'text-red-600 mt-2';
+                    }
+                } else {
+                    await signOut(auth);
+                    messageDiv.textContent = 'User data not found. Contact an administrator.';
+                    messageDiv.className = 'text-red-600 mt-2';
+                }
+
+            } catch (error) {
+                console.error("Error during login:", error);
+                let errorMessage = 'Invalid email or password.';
+                if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Invalid email or password.';
+                }
+                messageDiv.textContent = errorMessage;
+                messageDiv.className = 'text-red-600 mt-2';
+            }
+        });
+    </script>
+</body>
+</html>
